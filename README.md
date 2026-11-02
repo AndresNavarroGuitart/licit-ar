@@ -104,7 +104,7 @@ Cada requisito listo tiene **Ver documento**. **Ver paquete completo** (`#/l/:id
 | `#/l/:id/paquete` | Paquete final: rótulo, índice y todos los documentos foliados, imprimible |
 | `#/biblioteca` y `#/biblioteca/:id` | Documentos agrupados por licitación (expediente, biblioteca usada, archivos subidos y propios), con buscador en vivo, filtro por licitación y "sin usar en ninguna"; cada fila indica el requisito que cubre y el vencimiento contra la apertura |
 | `#/empresa` y `#/empresa/:id` | **Mi empresa**: varias empresas o sociedades, con sus datos, sus documentos y lo que piden sus pliegos |
-| `#/onboarding` y `#/onboarding/:paso` | **Onboarding**: guía de 8 pasos (datos de la empresa, documentos, subir el pliego, resumen, requisitos, oferta, revisión, presentar). Cada paso dice qué hacer, qué información y qué documentos hacen falta, y se tilda solo según lo cargado (salvo "revisar el resumen" y "cargar la oferta", que se marcan a mano). Cada paso se despliega justo debajo de su título (uno abierto a la vez). Se elige solo la empresa; los pasos 4 a 8 siguen su primera licitación sin presentar |
+| `#/onboarding` y `#/onboarding/:paso` | **Onboarding**: es la pantalla de entrada al abrir el link, con los pasos cerrados; guía de 8 pasos (datos de la empresa, documentos, subir el pliego, resumen, requisitos, oferta, revisión, presentar). Cada paso dice qué hacer, qué información y qué documentos hacen falta, y se tilda solo según lo cargado (salvo "revisar el resumen" y "cargar la oferta", que se marcan a mano). Cada paso se despliega justo debajo de su título (uno abierto a la vez). Se elige solo la empresa; los pasos 4 a 8 siguen su primera licitación sin presentar |
 
 ## Diseño
 

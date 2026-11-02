@@ -9,7 +9,7 @@
   function route() {
     var h = (location.hash || '#/').replace(/^#/, '').split('/').filter(Boolean);
     if (h[0] === 'l' && S.lic(h[1])) { var lic = S.lic(h[1]); UI.carpeta = S.T(lic).carpetas; return { page: 'detalle', lic: lic, tab: h[2] || 'resumen' }; }
-    if (h[0] === 'onboarding') return { page: 'onboarding', paso: h[1] === 'cerrar' ? -1 : +h[1] || 0 };
+    if (h[0] === 'onboarding') return { page: 'onboarding', paso: +h[1] || 0 };
     if (h[0] === 'biblioteca') return { page: 'biblioteca', filtro: h[1] || '' };
     if (h[0] === 'empresa') return { page: 'empresa', id: h[1] || '' };
     if (h[0] === 'nueva') return { page: 'nueva' };
@@ -313,5 +313,7 @@
     var paso = route().page === 'onboarding' && document.querySelector('.ob-item.on');
     if (paso) paso.scrollIntoView({ block: 'start' }); else window.scrollTo(0, 0);
   });
+  /* al abrir el link sin ruta se entra al onboarding, con todos los pasos cerrados */
+  if (!location.hash || location.hash === '#') location.replace('#/onboarding');
   render();
 })();

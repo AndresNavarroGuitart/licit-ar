@@ -133,8 +133,8 @@
   V.onboarding = function (n) {
     var S = Store.get(), e = empSel(), l = licSel(e), ps = pasos(e, l);
     var hechos = ps.filter(function (x) { return x.done; }).length, pct = Math.round(100 * hechos / ps.length);
-    /* n: 0 abre el primer paso pendiente, -1 deja todo cerrado */
-    var i = n === -1 ? -1 : n >= 1 && n <= ps.length ? n - 1 : Math.max(0, ps.findIndex(function (x) { return !x.done; }));
+    /* todos los pasos arrancan cerrados: se abre el que indica la ruta (#/onboarding/3) */
+    var i = n >= 1 && n <= ps.length ? n - 1 : -1;
 
     var selEmp = '<div class="row wrap" style="gap:12px;align-items:flex-end"><label class="f" style="flex:1;min-width:220px;max-width:420px">Empresa<select data-onbemp>' + S.empresas.map(function (x) { return '<option value="' + x.id + '"' + (x.id === e.id ? ' selected' : '') + '>' + esc(corto(x)) + '</option>'; }).join('') + '</select></label>' +
       '<a class="btn" href="#/empresa/' + e.id + '">Ir a Mi empresa</a></div>';
