@@ -124,10 +124,10 @@
     }
     /* presentar */
     var rest = Store.ETAPAS.filter(function (x) { return x.n >= 4; });
-    return bloque('Qué tenés que hacer', lista(['En Presentación revisá el contenido final, con el orden y los folios que define el pliego.', 'Completá el control final y descargá el documento a entregar (HTML para pasar a PDF, Word o el índice en CSV).', 'Entregalo como pide el pliego, en el plazo y con la garantía si corresponde.', 'Registrá la entrega: la licitación queda presentada y en solo lectura para no tocar nada por error.'], true)) +
+    return bloque('Qué tenés que hacer', lista(['En Presentación revisá el contenido final, con el orden y las páginas que define el pliego.', 'Completá el control final y descargá el documento a entregar (HTML para pasar a PDF, Word o el índice en CSV).', 'Entregalo como pide el pliego, en el plazo y con la garantía si corresponde.', 'Registrá la entrega: la licitación queda presentada y en solo lectura para no tocar nada por error.'], true)) +
       bloque('Después de presentar', '<p class="muted" style="margin:0 0 8px;font-size:13px">Seguimiento lleva los plazos del pliego para cada etapa:</p>' + lista(rest.map(function (x) { return '<b>' + esc(x.t) + '.</b> ' + esc(x.d); }))) +
       (l.presentada ? '<div class="ob-aviso ok">Esta licitación ya está presentada.</div>' : '') +
-      '<div class="ob-acc">' + btn('Abrir el armado final', base + 'entrega', !l.presentada) + btn('Ver paquete completo', base + 'paquete') + btn('Abrir el seguimiento', base + 'seguimiento', l.presentada) + '</div>';
+      '<div class="ob-acc">' + btn('Abrir el armado final', base + 'entrega', !l.presentada) + btn('Ver pliego completo', base + 'paquete') + btn('Abrir el seguimiento', base + 'seguimiento', l.presentada) + '</div>';
   }
 
   V.onboarding = function (n) {

@@ -79,14 +79,14 @@
     if (analizada && l.presentada && V.RO_TABS.indexOf(tab) > -1) {
       aviso = l.editable
         ? '<div class="banner" style="margin-bottom:16px"><span>✎</span><span style="flex:1"><b>Edición habilitada.</b> Esta licitación ya está presentada: lo que cambies no modifica lo entregado.</span><button class="btn sm" data-act="bloquear">Volver a solo lectura</button></div>'
-        : '<div class="banner info" style="margin-bottom:16px"><span>🔒</span><span style="flex:1"><b>Oferta presentada: solo lectura.</b> Podés ver toda la información, abrir los documentos y el paquete. Los cambios están bloqueados.</span><button class="btn sm" data-act="desbloquear">Habilitar edición</button></div>';
+        : '<div class="banner info" style="margin-bottom:16px"><span>🔒</span><span style="flex:1"><b>Oferta presentada: solo lectura.</b> Podés ver toda la información, abrir los documentos y el pliego. Los cambios están bloqueados.</span><button class="btn sm" data-act="desbloquear">Habilitar edición</button></div>';
     }
     return hero + (l.params ? etapas(l) : '') + nav + aviso + body;
   };
 
   function sinAnalizar(l) {
     if (l.presentada) return '<div class="card empty"><h2>Licitación presentada</h2><p style="margin-top:6px">Esta carga histórica no tiene detalle en el preview.</p></div>';
-    return '<div class="card empty"><h2>Todavía no está analizada</h2><p style="margin:6px 0 16px">Subí los archivos del pliego y generamos el checklist, el cronograma y el índice del paquete.</p><a class="btn primary" href="#/l/' + l.id + '/archivos">Ir a Archivos</a></div>';
+    return '<div class="card empty"><h2>Todavía no está analizada</h2><p style="margin:6px 0 16px">Subí los archivos del pliego y generamos el checklist, el cronograma y el índice del pliego.</p><a class="btn primary" href="#/l/' + l.id + '/archivos">Ir a Archivos</a></div>';
   }
 
   /* ---------------- 1. Resumen ---------------- */
@@ -95,7 +95,7 @@
     var rs = Store.reqs(l), falta = rs.filter(function (r) { return r.estado !== 'listo'; }), fo = Store.folios(l), par = l.params, c = Store.canon(l);
     function cnt(k) { var a = rs.filter(function (r) { return r.carpeta === k; }); return a.filter(function (r) { return r.estado === 'listo'; }).length + '/' + a.length; }
     var ahora = falta.slice(0, 5).map(function (r) {
-      return '<li><span class="i"></span><div style="flex:1"><div class="ink" style="font-weight:600">' + esc(r.titulo) + '</div><div class="muted" style="font-size:13px">' + esc(UI.origen[r.origen]) + ' · ' + r.folios + ' fol. ' + srcBtn(r.src) + '</div></div>' + UI.pill(UI.estadoReq[r.estado][0], UI.estadoReq[r.estado][1]) + '</li>';
+      return '<li><span class="i"></span><div style="flex:1"><div class="ink" style="font-weight:600">' + esc(r.titulo) + '</div><div class="muted" style="font-size:13px">' + esc(UI.origen[r.origen]) + ' · ' + r.folios + ' pág. ' + srcBtn(r.src) + '</div></div>' + UI.pill(UI.estadoReq[r.estado][0], UI.estadoReq[r.estado][1]) + '</li>';
     }).join('');
 
     var adj = [
@@ -113,7 +113,7 @@
 
     return '<div class="grid cols-2"><div class="grid">' +
       '<div class="card pad"><div class="row sb"><h3>Qué hay que armar</h3><a class="btn sm" href="#/l/' + l.id + '/armado">Ir al armado</a></div>' +
-      '<div class="grid cols-4" style="margin:6px 0 14px">' + mini('Carpeta 1', 'Antecedentes', cnt('A')) + mini('Carpeta 2', 'Oferta técnica', cnt('T')) + mini('Carpeta 3', 'Oferta económica', cnt('E')) + mini('Folios', 'Sobre único · 2 ejemplares', fo.total) + '</div>' + mod +
+      '<div class="grid cols-4" style="margin:6px 0 14px">' + mini('Carpeta 1', 'Antecedentes', cnt('A')) + mini('Carpeta 2', 'Oferta técnica', cnt('T')) + mini('Carpeta 3', 'Oferta económica', cnt('E')) + mini('Páginas', 'Sobre único · 2 ejemplares', fo.total) + '</div>' + mod +
       '<h3 style="font-size:14px">' + (falta.length ? 'Lo que falta (' + falta.length + ')' : 'Todo listo') + '</h3>' +
       (falta.length ? '<ul class="todo" style="margin-top:8px">' + ahora + '</ul>' + (falta.length > 5 ? '<p class="muted" style="margin-top:10px">y ' + (falta.length - 5) + ' más en <a href="#/l/' + l.id + '/requisitos">Requisitos</a>.</p>' : '') : '<p class="muted">Pasá a la revisión final.</p>') + '</div>' +
       '<div class="card pad"><h3>Si resultás adjudicatario</h3><p class="muted" style="margin:-4px 0 10px;font-size:13px">Lo que viene después, con plazos cortos. Conviene tenerlo previsto desde la oferta.</p><ul class="todo">' + adj + '</ul></div></div>' +
@@ -158,8 +158,8 @@
     var html = groups.map(function (g) {
       return '<div class="group"><div class="group-h"><h3>' + esc(UI.carpeta[g.carpeta]) + ' · ' + esc(g.grupo) + '</h3><span class="muted">' + g.items.filter(function (r) { return r.estado === 'listo'; }).length + ' de ' + g.items.length + '</span></div><div class="card">' +
         g.items.map(function (r) {
-          return '<div class="req"><button class="stbtn ' + r.estado + '" data-act="ciclo" data-id="' + r.id + '" title="Cambiar estado" aria-label="Estado: ' + UI.estadoReq[r.estado][0] + '">✓</button>' +
-            '<div><div class="t">' + esc(r.titulo) + '</div><div class="d">' + esc(r.detalle) + (r.elim ? ' ' + UI.pill('Si falta, se rechaza', 'bad') : '') + '</div></div>' + srcBtn(r.src) + UI.pill(UI.estadoReq[r.estado][0], UI.estadoReq[r.estado][1]) + '</div>';
+          return '<div class="req" style="grid-template-columns:34px 1fr auto auto auto"><button class="stbtn ' + r.estado + '" data-act="ciclo" data-id="' + r.id + '" title="Cambiar estado" aria-label="Estado: ' + UI.estadoReq[r.estado][0] + '">✓</button>' +
+            '<div><div class="t">' + esc(r.titulo) + '</div><div class="d">' + esc(r.detalle) + (r.elim ? ' ' + UI.pill('Si falta, se rechaza', 'bad') : '') + '</div></div>' + srcBtn(r.src) + UI.pill(UI.estadoReq[r.estado][0], UI.estadoReq[r.estado][1]) + '<button class="btn sm" data-act="cargar-req" data-id="' + r.id + '">Cargar / editar</button></div>';
         }).join('') + '</div></div>';
     }).join('');
     return '<div class="row sb wrap" style="margin-bottom:14px"><div><h2>Checklist de requisitos</h2><p class="muted">Lo que el pliego exige, ordenado por carpeta del sobre único. Tocá <b>§</b> para ver de dónde sale cada uno.</p></div><div class="chips" style="margin:0">' + chips + '</div></div>' +
@@ -185,13 +185,14 @@
         } else if (r.origen === 'anexo2') {
           btn = '<button class="btn sm primary" data-act="anexo2">Ver formulario</button>';
         } else {
-          extra = r.archivo ? '<div class="muted" style="font-size:13px">' + esc(r.archivo) + '</div>' : '';
-          btn = '<label class="btn sm ' + (r.archivo ? '' : 'primary') + '">' + (r.archivo ? 'Reemplazar' : 'Subir archivo') + '<input type="file" class="hide" data-up="' + r.id + '"></label>';
+          var fl = (r.archivos || []).map(function (a) { return a.nombre; }); if (!fl.length && r.archivo) fl = [r.archivo];
+          extra = fl.length ? '<div class="muted" style="font-size:13px">' + esc(fl.join(', ')) + '</div>' : '';
+          btn = '<button class="btn sm ' + (fl.length ? '' : 'primary') + '" data-act="cargar-req" data-id="' + r.id + '">' + (fl.length ? 'Ver / editar' : 'Cargar') + '</button>';
         }
-        return '<div class="req" style="grid-template-columns:96px 1fr auto auto"><span class="folio">fol. ' + fo.byReq[r.id].from + '–' + fo.byReq[r.id].to + '</span>' +
-          '<div><div class="t">' + esc(r.titulo) + '</div>' + (extra || '<div class="d">' + esc(UI.origen[r.origen]) + '</div>') + (r.estado !== 'pendiente' ? '<button class="linkb" data-act="ver-doc" data-id="' + r.id + '">Ver documento</button>' : '') + '</div>' + UI.pill(UI.estadoReq[r.estado][0], UI.estadoReq[r.estado][1]) + btn + '</div>';
+        return '<div class="req" style="grid-template-columns:96px 1fr auto auto"><span class="folio">pág. ' + fo.byReq[r.id].from + '–' + fo.byReq[r.id].to + '</span>' +
+          '<div><div class="t">' + esc(r.titulo) + '</div>' + (extra || '<div class="d">' + esc(UI.origen[r.origen]) + '</div>') + (r.estado !== 'pendiente' ? '<button class="linkb" data-act="ver-doc" data-id="' + r.id + '">Ver documento</button>' : '') + (r.origen === 'externo' ? '' : '<button class="linkb" data-act="cargar-req" data-id="' + r.id + '" style="margin-left:12px">Cargar / editar</button>') + '</div>' + UI.pill(UI.estadoReq[r.estado][0], UI.estadoReq[r.estado][1]) + btn + '</div>';
       }).join('');
-      return '<div class="group"><div class="group-h"><h3>' + esc(UI.carpeta[c]) + '</h3><span class="muted">' + fo.porCarpeta[c] + ' folios</span></div><div class="card">' + rows + '</div></div>';
+      return '<div class="group"><div class="group-h"><h3>' + esc(UI.carpeta[c]) + '</h3><span class="muted">' + fo.porCarpeta[c] + ' páginas</span></div><div class="card">' + rows + '</div></div>';
     }
     var reglas = [
       'Todo en español; documentos extranjeros legalizados o con apostilla, y traducción de traductor público matriculado.',
@@ -205,8 +206,8 @@
     var emp = Store.empresaDe(l), falt = Store.bloqueada(l) ? [] : Store.datosFaltantes(l);
     var faltan = falt.length ? '<div class="card pad" style="margin-bottom:18px"><h3 style="margin-bottom:4px">Faltan datos de ' + esc((emp.razon || 'la empresa').replace(/\s*\(ficticia\)\s*/i, '')) + ' para redactar los borradores (' + falt.length + ')</h3>' +
       '<p class="muted" style="margin:0 0 12px;font-size:13px">Cargalos acá mismo: se guardan en <a href="#/empresa/' + emp.id + '">Mi empresa</a> y se usan en todas sus licitaciones.</p><div class="grid cols-eq" style="gap:14px">' + falt.map(function (c) { return V.campoEmp(emp, c); }).join('') + '</div></div>' : '';
-    return '<div class="row sb wrap" style="margin-bottom:14px"><div><h2>Armado del paquete</h2><p class="muted">Cada requisito se resuelve con un documento de tu biblioteca, un borrador redactado o un archivo que subís.</p></div>' +
-      '<div class="row wrap"><button class="btn primary" data-act="simular">Simular el armado de la oferta</button><button class="btn" data-act="paquete">Índice del paquete</button><a class="btn" href="#/l/' + l.id + '/paquete">Ver paquete completo</a><a class="btn" href="#/biblioteca/' + l.id + '">Documentos de la licitación</a></div></div>' +
+    return '<div class="row sb wrap" style="margin-bottom:14px"><div><h2>Armado del pliego</h2><p class="muted">Cada requisito se resuelve con un documento de tu biblioteca, un borrador redactado o un archivo que subís.</p></div>' +
+      '<div class="row wrap"><button class="btn primary" data-act="simular">Simular el armado de la oferta</button><button class="btn" data-act="paquete">Índice del pliego</button><a class="btn" href="#/l/' + l.id + '/paquete">Ver pliego completo</a><a class="btn" href="#/biblioteca/' + l.id + '">Documentos de la licitación</a></div></div>' +
       faltan +
       (V.TV[Store.T(l).oferta] ? V.TV[Store.T(l).oferta].reglas(l) : '<details class="card pad" style="margin-bottom:18px"><summary style="cursor:pointer;font-weight:600;color:var(--ink)">Reglas de forma del sobre ' + srcBtn(S(Store.PBC, 'Art. II.1', 15, 'Los oferentes presentarán sus ofertas en un Sobre único. Todas las hojas serán numeradas correlativamente, debiendo incluirse un índice en el que se detalle el contenido de la presentación.', 'Sobre único')) + '</summary>' +
       '<ul style="margin:10px 0 0;padding-left:20px;display:grid;gap:4px">' + reglas.map(function (r) { return '<li>' + r + '</li>'; }).join('') + '</ul></details>') +
@@ -266,10 +267,10 @@
     var lista = !bloq.length;
     return '<div class="banner ' + (lista ? 'info' : '') + '" style="margin-bottom:16px"><span>' + (lista ? '✓' : '!') + '</span><span>' + (lista ? '<b>Sin bloqueos.</b> ' + (avisos.length ? 'Revisá los ' + avisos.length + ' aviso(s) y pasá al armado final.' : 'Podés pasar al armado final.') : '<b>' + bloq.length + ' punto(s) a resolver</b> antes de presentar.') + '</span></div>' +
       '<div class="card">' + rows + '</div>' +
-      '<div class="row wrap" style="margin-top:18px"><button class="btn" data-act="paquete">Índice del paquete</button>' +
+      '<div class="row wrap" style="margin-top:18px"><button class="btn" data-act="paquete">Índice del pliego</button>' +
       (lista ? '<a class="btn primary" href="#/l/' + l.id + '/entrega">Ir al armado final</a>' : '<button class="btn primary" disabled>Ir al armado final</button>') +
       '<button class="btn" data-act="presentada"' + (lista && !l.presentada ? '' : ' disabled') + '>' + (l.presentada ? 'Ya marcada como presentada' : 'Marcar como presentada') + '</button></div>' +
-      '<p class="muted" style="margin-top:10px;font-size:13px">El paquete se arma con datos ficticios y se puede imprimir o guardar como PDF desde el navegador. La versión real lo genera foliado, en original y copia, para firmar y sellar.</p>';
+      '<p class="muted" style="margin-top:10px;font-size:13px">El pliego se arma con datos ficticios y se puede imprimir o guardar como PDF desde el navegador. La versión real lo genera paginado, en original y copia, para firmar y sellar.</p>';
   }
 
   /* ---------------- paquete final: todo el sobre en orden ---------------- */
@@ -281,10 +282,10 @@
       }).join('');
     }).join('');
     return '<a class="crumb" href="#/l/' + l.id + '/revision">← Volver a la revisión</a>' +
-      '<div class="head"><div><h1>Paquete final</h1><p>' + esc(l.nro) + ' · ' + esc(l.titulo) + '</p></div>' +
+      '<div class="head"><div><h1>Pliego final</h1><p>' + esc(l.nro) + ' · ' + esc(l.titulo) + '</p></div>' +
       '<div class="row wrap"><button class="btn primary" data-act="imprimir">Imprimir o guardar como PDF</button></div></div>' +
-      '<div class="banner' + (bloq || p.done < p.total ? '' : ' info') + ' no-print" style="margin-bottom:16px"><span>' + (bloq || p.done < p.total ? '!' : '✓') + '</span><span>' + (p.done < p.total ? '<b>Borrador:</b> faltan ' + (p.total - p.done) + ' requisito(s). Los pendientes figuran vacíos.' : bloq ? '<b>Hay ' + bloq + ' punto(s) sin resolver en la revisión.</b>' : '<b>Paquete completo,</b> ' + fo.total + ' folios.') + ' Todo el contenido es un ejemplo con datos ficticios.</span></div>' +
-      '<div class="pkg-layout"><nav class="pkg-toc" aria-label="Contenido del paquete">' + toc + '</nav><div>' + V.paquete(l).replace(/<h2>Vista previa del paquete<\/h2><p class="muted">[^<]*<\/p>/, '') + Demo.paqueteCompleto(l) + '</div></div>';
+      '<div class="banner' + (bloq || p.done < p.total ? '' : ' info') + ' no-print" style="margin-bottom:16px"><span>' + (bloq || p.done < p.total ? '!' : '✓') + '</span><span>' + (p.done < p.total ? '<b>Borrador:</b> faltan ' + (p.total - p.done) + ' requisito(s). Los pendientes figuran vacíos.' : bloq ? '<b>Hay ' + bloq + ' punto(s) sin resolver en la revisión.</b>' : '<b>Pliego completo,</b> ' + fo.total + ' páginas.') + ' Todo el contenido es un ejemplo con datos ficticios.</span></div>' +
+      '<div class="pkg-layout"><nav class="pkg-toc" aria-label="Contenido del pliego">' + toc + '</nav><div>' + V.paquete(l).replace(/<h2>Vista previa del pliego<\/h2><p class="muted">[^<]*<\/p>/, '') + Demo.paqueteCompleto(l) + '</div></div>';
   };
 
   /* ---------------- modales ---------------- */
@@ -296,9 +297,9 @@
       }).join('') + '</table>';
     }
     var tv = V.TV[Store.T(l).oferta], lotes = !!tv;
-    return '<h2>Vista previa del paquete</h2><p class="muted">' + (lotes ? 'Portada, índice y numeración generados automáticamente.' : 'Rótulo del sobre e índice generados automáticamente, con las hojas numeradas en forma correlativa.') + '</p>' +
+    return '<h2>Vista previa del pliego</h2><p class="muted">' + (lotes ? 'Portada, índice y numeración generados automáticamente.' : 'Rótulo del sobre e índice generados automáticamente, con las hojas numeradas en forma correlativa.') + '</p>' +
       (lotes ? tv.portada(l) :'<div class="paper cover"><div class="kicker">Sobre único · Original</div><h2>' + esc(l.nro) + '</h2><p style="text-align:center">' + esc(l.titulo) + '</p><p style="text-align:center;margin-top:24px">' + esc(l.organismo) + '</p>' +
       '<p style="text-align:center;margin-top:24px" class="muted">Apertura: ' + UI.date(l.fechas.apertura) + ' · ' + l.fechas.horaAper + ' h</p><p style="text-align:center;font-size:13px;color:#888;margin-top:30px">Sin identificación del oferente, según el pliego.</p></div>') +
-      '<div class="paper"><h2>Índice</h2>' + Store.T(l).orden.map(idx).join('') + '<p style="text-align:right;margin-top:14px;font-size:13px;color:#666">Total: ' + fo.total + ' folios' + (lotes ? '' : ' · 2 ejemplares') + '</p></div>';
+      '<div class="paper"><h2>Índice</h2>' + Store.T(l).orden.map(idx).join('') + '<p style="text-align:right;margin-top:14px;font-size:13px;color:#666">Total: ' + fo.total + ' páginas' + (lotes ? '' : ' · 2 ejemplares') + '</p></div>';
   };
 })();

@@ -45,13 +45,13 @@
     a.href = url; a.download = nombre; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
   }
-  function cuerpo(l) { return V.paquete(l).replace(/<h2>Vista previa del paquete<\/h2><p class="muted">[^<]*<\/p>/, '') + Demo.paqueteCompleto(l); }
+  function cuerpo(l) { return V.paquete(l).replace(/<h2>Vista previa del pliego<\/h2><p class="muted">[^<]*<\/p>/, '') + Demo.paqueteCompleto(l); }
 
   /* descarga real del documento a entregar: HTML autónomo (se imprime a PDF), Word editable o índice en CSV */
   V.descargar = function (l, fmt) {
     var nombre = slug(l);
     if (fmt === 'csv') {
-      var fo = Store.folios(l), filas = [['Carpeta', 'Documento', 'Folio desde', 'Folio hasta', 'Estado', 'Origen']];
+      var fo = Store.folios(l), filas = [['Carpeta', 'Documento', 'Página desde', 'Página hasta', 'Estado', 'Origen']];
       Store.T(l).orden.forEach(function (c) {
         Store.reqs(l).filter(function (r) { return r.carpeta === c; }).forEach(function (r) { filas.push([UI.carpeta[c], r.titulo, fo.byReq[r.id].from, fo.byReq[r.id].to, UI.estadoReq[r.estado][0], UI.origen[r.origen]]); });
       });
@@ -61,13 +61,13 @@
     var titulo = esc(l.nro + ' · ' + l.titulo);
     if (fmt === 'doc') {
       var css = 'body{font-family:Georgia,serif;font-size:11pt;color:#1d1d1d}.paper{padding:0 0 18pt}h2{text-align:center;text-transform:uppercase;font-size:13pt}table{border-collapse:collapse;width:100%}td,th{border:1px solid #bbb;padding:3pt 5pt;font-size:10pt}.pkg-sep{page-break-before:always;font:bold 10pt Arial;text-transform:uppercase;margin-top:12pt}.pkg-doc{page-break-before:always}.fill{background:#fff3c4}.muted{color:#777}.pill{font:9pt Arial}';
-      bajar(nombre + '_paquete.doc', 'application/msword', '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>' + titulo + '</title><style>' + css + '</style></head><body>' + cuerpo(l) + '</body></html>');
+      bajar(nombre + '_pliego.doc', 'application/msword', '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>' + titulo + '</title><style>' + css + '</style></head><body>' + cuerpo(l) + '</body></html>');
       return UI.toast('Documento descargado (Word). Se abre y se edita en Word o Google Docs.');
     }
     /* HTML autónomo: lleva los estilos de la app dentro del archivo */
     fetch('styles.css').then(function (r) { return r.text(); }).catch(function () { return ''; }).then(function (estilos) {
       var extra = '.pkg-doc,.pkg-sep{break-inside:avoid-page}.pkg-doc{break-before:page}body{background:#f4f2ec;margin:0;padding:24px}.doc{max-width:860px;margin:0 auto}';
-      bajar(nombre + '_paquete.html', 'text/html;charset=utf-8', '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>' + titulo + '</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><style>' + estilos + extra + '</style></head><body><div class="doc">' + cuerpo(l) + '</div></body></html>');
+      bajar(nombre + '_pliego.html', 'text/html;charset=utf-8', '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>' + titulo + '</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><style>' + estilos + extra + '</style></head><body><div class="doc">' + cuerpo(l) + '</div></body></html>');
       UI.toast('Archivo descargado (HTML). Abrilo y elegí Imprimir → Guardar como PDF.');
     });
   };
@@ -91,7 +91,7 @@
         return '<tr><td class="mono" style="white-space:nowrap">' + fo.byReq[r.id].from + '–' + fo.byReq[r.id].to + '</td><td>' + esc(r.titulo) + '</td><td>' + UI.pill(UI.estadoReq[r.estado][0], UI.estadoReq[r.estado][1]) + '</td><td class="right"><a class="btn sm" href="#/l/' + l.id + '/armado">Ver</a></td></tr>';
       }).join('');
     }).join('');
-    var contenido = '<div class="card pad">' + N(1, 'Contenido del documento', 'El orden y los folios los define el pliego. ' + fo.total + ' folios en total · ' + pr.done + ' de ' + pr.total + ' requisitos listos.') +
+    var contenido = '<div class="card pad">' + N(1, 'Contenido del documento', 'El orden y las páginas las define el pliego. ' + fo.total + ' páginas en total · ' + pr.done + ' de ' + pr.total + ' requisitos listos.') +
       '<div style="overflow-x:auto"><table class="t"><tbody>' + filas + '</tbody></table></div></div>';
 
     /* 2. formato de entrega */
@@ -110,7 +110,7 @@
 
     /* 4. generar el documento */
     var generar = '<div class="card pad stack">' + N(4, 'Generar el documento a entregar', 'Se arma con todos los documentos en orden, con la carátula y el índice. En esta versión el contenido es de ejemplo.') +
-      '<div class="row wrap"><a class="btn primary" href="#/l/' + l.id + '/paquete">Ver el paquete completo</a><button class="btn" data-act="descargar" data-fmt="html">Descargar archivo (HTML)</button><button class="btn" data-act="descargar" data-fmt="doc">Descargar Word (.doc)</button><button class="btn" data-act="descargar" data-fmt="csv">Descargar índice (CSV)</button></div>' +
+      '<div class="row wrap"><a class="btn primary" href="#/l/' + l.id + '/paquete">Ver el pliego completo</a><button class="btn" data-act="descargar" data-fmt="html">Descargar archivo (HTML)</button><button class="btn" data-act="descargar" data-fmt="doc">Descargar Word (.doc)</button><button class="btn" data-act="descargar" data-fmt="csv">Descargar índice (CSV)</button></div>' +
       '<p class="muted" style="margin:0;font-size:13px">El archivo HTML se abre en cualquier navegador y se pasa a PDF con Imprimir → Guardar como PDF. El Word sirve para ajustar algo antes de firmar.</p></div>';
 
     /* 5. registrar la entrega */

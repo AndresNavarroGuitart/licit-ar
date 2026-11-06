@@ -148,6 +148,7 @@
     if (D.TD[Store.T(l).oferta]) return D.TD[Store.T(l).oferta].doc(l, r);
     var e = Store.empresaDe(l), pl = D.plan(l), fl = D.flujo(l), o = l.oferta, par = l.params, c = Store.canon(l);
     if (r.estado !== 'listo' && r.estado !== 'en-curso') return '<div class="banner" style="margin:10px 0"><span>!</span><span>Este documento todavía no está armado.</span></div>';
+    if (r.textoHtml) return r.textoHtml;
     if (r.tpl) return Plantillas.render(r.tpl, e, l);
     if (r.origen === 'anexo2') return Plantillas.anexo2(e, l);
     if (r.origen === 'biblioteca' && ESCANEOS[r.id] && ESCANEOS[r.id](e)) return ESCANEOS[r.id](e);
@@ -266,7 +267,7 @@
     pasos.push({ txt: 'Constituyendo la garantía de oferta con vigencia hasta ' + UI.date(Store.addDaysTo(Store.garantiaVenceMin(l), 15)), run: function () {
       l.oferta.garantiaConstituida = true; l.oferta.garantiaVence = Store.addDaysTo(Store.garantiaVenceMin(l), 15);
     } });
-    pasos.push({ txt: 'Foliando el sobre único: ' + Store.folios(l).total + ' hojas en 3 carpetas', run: function () {} });
+    pasos.push({ txt: 'Numerando el sobre único: ' + Store.folios(l).total + ' hojas en 3 carpetas', run: function () {} });
     pasos.push({ txt: 'Verificando controles del pliego', run: function () {} });
     return pasos;
   };
@@ -278,7 +279,7 @@
     function T() { for (var i = 0; i < arguments.length; i++) s.tareas[arguments[i]] = true; }
     function add(c, txt, run) { pasos.push({ c: c, txt: txt, run: run }); }
     var E3 = 'Etapa 3 · Presentación de ofertas', E4 = 'Etapa 4 · Apertura y evaluación', E5 = 'Etapa 5 · Adjudicación y contratación', E6 = 'Etapa 6 · Ejecución y cierre';
-    add(E3, 'Sobre único entregado en las oficinas del ENAPRO: ' + fo + ' folios, original y copia', function () { Store.setEtapa(l, 4); T('t2a', 't2b', 't2c', 't2d'); s.circulares = [{ n: 1, fecha: Store.addBusinessDays(f.apertura, -6), resumen: 'Aclara el horario de recepción de sobres (ficticia).' }]; });
+    add(E3, 'Sobre único entregado en las oficinas del ENAPRO: ' + fo + ' páginas, original y copia', function () { Store.setEtapa(l, 4); T('t2a', 't2b', 't2c', 't2d'); s.circulares = [{ n: 1, fecha: Store.addBusinessDays(f.apertura, -6), resumen: 'Aclara el horario de recepción de sobres (ficticia).' }]; });
     add(E4, 'Acto de apertura: se recibieron 4 ofertas y la tuya es la N° 3, con ' + fo + ' hojas (acta notarial)', function () { s.apertura = { nro: 3, oferentes: 4, orden: 0 }; T('t4a'); });
     add(E4, 'Garantía original entregada en Asuntos Legales dentro de las 24 h', function () { T('t4b'); });
     add(E4, 'La Comisión pide una aclaración y se responde dentro de las 48 h', function () { T('t4c'); });
@@ -294,13 +295,20 @@
     return pasos;
   };
 
-  /* ---------- paquete final: todos los documentos en orden, con folios ---------- */
+  /* archivos que cargó la persona para este requisito (el contenido queda en su navegador): se nombran en el pliego final */
+  function adjuntos(r) {
+    var n = (r.archivos || []).map(function (a) { return a.nombre; }), d = r.docId && Store.doc(r.docId);
+    if (d && d.fileId) n.push(d.archivo);
+    return n.length ? '<p class="muted" style="font-size:13px;margin:8px 0 0">Archivo adjunto: ' + esc(n.join(', ')) + '. Se agrega al envío como archivo aparte.</p>' : '';
+  }
+
+  /* ---------- paquete final: todos los documentos en orden, con páginas ---------- */
   D.paqueteCompleto = function (l) {
     var fo = Store.folios(l), e = Store.empresaDe(l), listos = Store.progress(l);
     var cuerpo = Store.T(l).orden.map(function (c) {
       return '<div class="pkg-sep"><span>Carpeta · ' + esc(UI.carpeta[c]) + '</span></div>' + Store.reqs(l).filter(function (r) { return r.carpeta === c; }).map(function (r) {
         var f = fo.byReq[r.id];
-        return '<section class="pkg-doc" id="doc-' + r.id + '"><div class="pkg-h"><span class="mono">fol. ' + f.from + '–' + f.to + '</span><span>' + esc(r.titulo) + '</span>' + UI.pill(UI.estadoReq[r.estado][0], UI.estadoReq[r.estado][1]) + '</div>' + D.doc(l, r) + '</section>';
+        return '<section class="pkg-doc" id="doc-' + r.id + '"><div class="pkg-h"><span class="mono">pág. ' + f.from + '–' + f.to + '</span><span>' + esc(r.titulo) + '</span>' + UI.pill(UI.estadoReq[r.estado][0], UI.estadoReq[r.estado][1]) + '</div>' + D.doc(l, r) + adjuntos(r) + '</section>';
       }).join('');
     }).join('');
     return '<div class="pkg">' + cuerpo + '</div>';

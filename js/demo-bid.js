@@ -11,19 +11,20 @@
     lp8: function (e) { return scan('Poder y autorización del firmante', 'Copia certificada', [['Sociedad', e.razon], ['Apoderado', e.representante + ' · DNI ' + e.dni], ['Facultades', 'Presentar ofertas, firmar formularios y declaraciones y comprometer a la sociedad en procesos de compra financiados por organismos multilaterales'], ['Instrumento', e.poder]]); },
     lp9: function (e) { return scan('Estatuto social y actas', 'Copia simple', [['Razón social', e.razon], ['Constitución', 'Escritura N° 214 del 12/03/2014 (ficticia)'], ['Objeto social', 'Comercialización, instalación y servicio técnico de equipos de inspección, seguridad y tecnología'], ['Autoridades', 'Presidente: ' + e.representante]]); },
     lp11: function (e, l) { return scan('Autorización del Fabricante', 'Formulario de la Sección IV', [['Fabricante', 'Escáneres del Mundo S.A. (ficticio)'], ['Autoriza a', e.razon], ['Para suministrar', lotesCot(l).map(function (z) { return z.L.nombre; }).join('; ')], ['Alcance', 'Garantía plena y servicio posterior a la venta en la República Argentina']]); },
-    lp13: function (e, l) { return scan('Folletería, manuales y hojas técnicas', '60 folios', [['Contenido', lotesCot(l).map(function (z) { return 'Hoja técnica y manual del lote ' + z.L.id; }).join(' · ')], ['Idioma', 'Español, con traducción de los textos en otro idioma']]); },
+    lp13: function (e, l) { return scan('Folletería, manuales y hojas técnicas', '60 páginas', [['Contenido', lotesCot(l).map(function (z) { return 'Hoja técnica y manual del lote ' + z.L.id; }).join(' · ')], ['Idioma', 'Español, con traducción de los textos en otro idioma']]); },
     lp16: function (e) { return scan('Estados contables auditados — últimos 5 ejercicios', 'Copia simple', [['Sociedad', e.razon], ['Ejercicios', '2021, 2022, 2023, 2024 y 2025'], ['Ventas del mejor ejercicio', 'USD 9.500.000 (equivalente, ficticio)'], ['Auditor', 'Estudio contable de ejemplo · informe sin salvedades']]); },
     cp4: function (e, l) { return scan('Pliego completo, firmado en original', 'Escaneo para el envío', [['Documento', l.nro + ' — ' + l.titulo], ['Hojas', '52, todas inicialadas; la última y la de la oferta económica con firma completa'], ['Firmante', e.representante + ' (' + e.cargo + ')']]); },
     cp6: function (e) { return scan('Estatuto, contrato social y poder', 'Copia simple', [['Razón social', e.razon], ['Constitución', 'Escritura N° 214 del 12/03/2014 (ficticia)'], ['Autoridades', 'Presidente: ' + e.representante]]); },
     cp7: function (e) { return scan('Autorización al signatario', 'Poder certificado', [['Sociedad', e.razon], ['Signatario', e.representante + ' · DNI ' + e.dni], ['Facultad', 'Firmar la cotización y obligar a la sociedad']]); },
     cp8: function (e) { return scan('Constancia de CUIT', 'Emitida por ARCA, vigente', [['Contribuyente', e.razon], ['CUIT', e.cuit], ['Estado', 'Activo']]); },
     cp9: function (e) { return scan('Autorización del fabricante', 'Formulario del pliego', [['Fabricante', 'Repuestos Originales S.A. (ficticio)'], ['Autoriza a', e.razon], ['Alcance', 'Suministro de repuestos originales para equipos Dell Latitude']]); },
-    cp12: function (e, l) { return scan('Folletería con datos técnicos', '12 folios', [['Contenido', lotesCot(l).map(function (z) { return z.L.nombre; }).join(' · ')]]); }
+    cp12: function (e, l) { return scan('Folletería con datos técnicos', '12 páginas', [['Contenido', lotesCot(l).map(function (z) { return z.L.nombre; }).join(' · ')]]); }
   };
 
   DB.doc = function (l, r) {
     var e = Store.empresaDe(l), m = l.oferta.moneda, cot = lotesCot(l), lpi = l.tid === 'lpi_bienes';
     if (r.estado !== 'listo' && r.estado !== 'en-curso') return '<div class="banner" style="margin:10px 0"><span>!</span><span>Este documento todavía no está armado.</span></div>';
+    if (r.textoHtml) return r.textoHtml;
     if (r.tpl) return Plantillas.render(r.tpl, e, l);
     if (r.origen === 'anexo2') return Plantillas.anexo2(e, l);
     if (ESC[r.id]) return ESC[r.id](e, l);
@@ -67,7 +68,7 @@
     pasos.push({ txt: 'Precios cargados: ' + tot.n + ' lote(s), ' + mon(tot.base, l.oferta.moneda) + ' sin impuestos', run: function () {} });
     if (lpi) pasos.push({ txt: 'Calificación: ventas, experiencia y capacidad por lote verificadas', run: function () {} });
     else pasos.push({ txt: 'Firmando cada formulario (' + l.oferta.firma.toLowerCase() + ') y armando el PDF único de ' + l.oferta.pesoMB + ' MB, con índice y clave', run: function () {} });
-    pasos.push({ txt: lpi ? 'Foliando ' + Store.folios(l).total + ' hojas y preparando original, copia física y copia digital' : 'Numerando ' + Store.folios(l).total + ' folios y preparando el correo de envío', run: function () {} });
+    pasos.push({ txt: lpi ? 'Numerando ' + Store.folios(l).total + ' hojas y preparando original, copia física y copia digital' : 'Numerando ' + Store.folios(l).total + ' páginas y preparando el correo de envío', run: function () {} });
     pasos.push({ txt: 'Verificando controles del pliego', run: function () {} });
     return pasos;
   };

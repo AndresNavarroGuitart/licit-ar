@@ -15,9 +15,9 @@
   V.resumenBid = function (l) {
     var T = Store.T(l), rs = Store.reqs(l), falta = rs.filter(function (r) { return r.estado !== 'listo'; }), fo = Store.folios(l), p = l.params, o = l.oferta, lpi = l.tid === 'lpi_bienes', doc = docDe(l);
     function cnt(k) { var a = rs.filter(function (r) { return r.carpeta === k; }); return a.filter(function (r) { return r.estado === 'listo'; }).length + '/' + a.length; }
-    var minis = T.orden.map(function (k, i) { return mini('Parte ' + (i + 1), T.carpetas[k], cnt(k)); }).join('') + mini('Folios', lpi ? 'Original + 2 copias' : 'PDF único', fo.total);
+    var minis = T.orden.map(function (k, i) { return mini('Parte ' + (i + 1), T.carpetas[k], cnt(k)); }).join('') + mini('Páginas', lpi ? 'Original + 2 copias' : 'PDF único', fo.total);
     var ahora = falta.slice(0, 5).map(function (r) {
-      return '<li><span class="i"></span><div style="flex:1"><div class="ink" style="font-weight:600">' + esc(r.titulo) + '</div><div class="muted" style="font-size:13px">' + esc(UI.origen[r.origen]) + ' · ' + r.folios + ' fol. ' + V.srcBtn(r.src) + '</div></div>' + UI.pill(UI.estadoReq[r.estado][0], UI.estadoReq[r.estado][1]) + '</li>';
+      return '<li><span class="i"></span><div style="flex:1"><div class="ink" style="font-weight:600">' + esc(r.titulo) + '</div><div class="muted" style="font-size:13px">' + esc(UI.origen[r.origen]) + ' · ' + r.folios + ' pág. ' + V.srcBtn(r.src) + '</div></div>' + UI.pill(UI.estadoReq[r.estado][0], UI.estadoReq[r.estado][1]) + '</li>';
     }).join('');
     var tot = Store.totalLotes(l);
     var mod = T.soportaUT ? '<div class="row wrap" style="margin:4px 0 16px"><span class="muted">Cómo se presenta:</span>' +
@@ -140,7 +140,7 @@
     return '<details class="card pad" style="margin-bottom:18px"><summary style="cursor:pointer;font-weight:600;color:var(--ink)">Reglas de forma de la ' + (lpi ? 'oferta' : 'cotización') + ' ' + ref + '</summary><ul style="margin:10px 0 0;padding-left:20px;display:grid;gap:4px">' + lista.map(function (r) { return '<li>' + r + '</li>'; }).join('') + '</ul></details>';
   };
 
-  /* ---------------- portada del paquete ---------------- */
+  /* ---------------- portada del pliego ---------------- */
   V.portadaBid = function (l) {
     var lpi = l.tid === 'lpi_bienes', par = l.params, e = Store.empresaDe(l), fo = Store.folios(l).total, o = l.oferta;
     if (lpi) {
@@ -148,7 +148,7 @@
         '<p style="text-align:center;margin-top:22px"><b>FECHA DE APERTURA:</b> ' + UI.date(l.fechas.apertura) + ', ' + l.fechas.horaAper + ' h<br><b>NO ABRIR ANTES DE:</b> ' + UI.date(l.fechas.apertura) + ', ' + l.fechas.horaAper + ' h</p>' +
         '<p style="text-align:center;font-size:13px;color:#888;margin-top:26px">Se entregan 3 juegos: original, copia física y copia digital, con las leyendas del DDL 23.2(c).</p></div>';
     }
-    var cuerpoMail = '<table class="ptab"><tbody><tr><th>Para</th><td>adquisicionesvuce@produccion.gob.ar</td></tr><tr><th>Asunto</th><td>Comparación de Precios Nº ' + esc(l.nro.replace('CP ', '')) + ' — ' + esc(l.titulo) + '</td></tr><tr><th>Cuerpo</th><td>Proveedor: ' + esc(e.razon) + ' · CUIT ' + esc(e.cuit) + '<br>Contacto: ' + esc(e.representante) + ' · ' + esc(e.telefono) + '<br>Documento del representante: ' + esc(e.dni) + '<br>Archivos: 1 (' + (Number(o.pesoMB) || 0) + ' MB)</td></tr><tr><th>Adjunto</th><td class="mono">Cotizacion_' + esc(l.nro.replace(/[^A-Z0-9]+/gi, '_')) + '.pdf (con clave, ' + fo + ' folios, firmado)</td></tr></tbody></table>';
+    var cuerpoMail = '<table class="ptab"><tbody><tr><th>Para</th><td>adquisicionesvuce@produccion.gob.ar</td></tr><tr><th>Asunto</th><td>Comparación de Precios Nº ' + esc(l.nro.replace('CP ', '')) + ' — ' + esc(l.titulo) + '</td></tr><tr><th>Cuerpo</th><td>Proveedor: ' + esc(e.razon) + ' · CUIT ' + esc(e.cuit) + '<br>Contacto: ' + esc(e.representante) + ' · ' + esc(e.telefono) + '<br>Documento del representante: ' + esc(e.dni) + '<br>Archivos: 1 (' + (Number(o.pesoMB) || 0) + ' MB)</td></tr><tr><th>Adjunto</th><td class="mono">Cotizacion_' + esc(l.nro.replace(/[^A-Z0-9]+/gi, '_')) + '.pdf (con clave, ' + fo + ' páginas, firmado)</td></tr></tbody></table>';
     return '<div class="paper"><h2>Correo de envío</h2><p>Se manda a más tardar a las ' + l.fechas.horaPres + ' h del ' + UI.date(l.fechas.apertura) + ', hora de recepción en el servidor del comprador.</p>' + cuerpoMail + '<p style="font-size:13px;color:#777">Después de la apertura se envía la clave del archivo al mismo correo.</p></div>';
   };
 

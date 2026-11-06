@@ -66,7 +66,7 @@
       var usos = []; lics.forEach(function (l) { l.requisitos.forEach(function (r) { if (r.docId === d.id && usos.indexOf(l.id) < 0) usos.push(l.id); }); });
       var usoTxt = usos.map(function (lid) { var l = Store.lic(lid); return '<a href="#/l/' + lid + '/armado">' + esc(l.nro) + '</a>'; }).join(', ') || '<span class="muted">sin usar</span>';
       return '<tr><td><div class="ink" style="font-weight:600">' + esc(d.nombre) + '</div><div class="muted mono" style="font-size:12px">' + esc(d.archivo) + '</div></td><td><span class="tag">' + esc(UI.tipoDoc[d.tipo] || d.tipo) + '</span></td><td class="num">' + UI.date(d.vence) + '</td><td>' + pillDoc(d) + '</td><td style="font-size:13px">' + usoTxt + '</td>' +
-        '<td class="right"><button class="btn sm ghost" data-act="del-doc" data-id="' + d.id + '" aria-label="Quitar documento">Quitar</button></td></tr>';
+        '<td class="right">' + (d.fileId ? '<button class="btn sm" data-act="ver-archivo" data-fid="' + d.fileId + '" data-nombre="' + esc(d.archivo) + '">Abrir</button> ' : '') + '<button class="btn sm ghost" data-act="del-doc" data-id="' + d.id + '" aria-label="Quitar documento">Quitar</button></td></tr>';
     }).join('');
 
     var misLics = lics.length ? lics.map(function (l) { var est = UI.estadoLic[l.estado]; return '<a class="lic" style="grid-template-columns:1fr auto" href="#/l/' + l.id + '/pliego"><div><div class="nro">' + esc(l.nro) + '</div><div class="t" style="font-size:15px">' + esc(l.titulo) + '</div></div>' + UI.pill(est[0], est[1]) + '</a>'; }).join('') : '<div class="empty">Todavía no presenta ninguna licitación.</div>';

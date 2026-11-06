@@ -88,7 +88,7 @@ Los cinco VUCEA tienen texto extraíble. No hizo falta OCR.
 1. **El tipo de procedimiento decide la estructura de la oferta.** Hay que tenerlo como dato de primer nivel (`concesion`, `lpi_bienes`, `cp_bienes`, `cp_servicios`), no solo como etiqueta.
 2. **Los pliegos BID son documentos estándar con un "Datos de la Licitación" que prevalece.** El checklist base se puede reutilizar casi tal cual y solo hay que extraer los valores específicos: validez, copias, fechas, documentos adicionales, criterios y cantidades. Eso hace la lectura automática mucho más confiable que en un pliego propio como el de Mangrullo.
 3. **Las fechas y el presupuesto sí están dentro del documento.** En Mangrullo hacía falta cargar la fecha a mano; aquí vienen en el pliego, y en CP además el presupuesto por lote (por ejemplo USD 6.000 por 12 meses de mantenimiento).
-4. **La presentación electrónica convierte el "paquete final" en otra cosa:** un solo PDF numerado, con índice, firmado, de hasta 25 MB. El preview de Mangrullo imprime un paquete físico.
+4. **La presentación electrónica convierte el "pliego final" en otra cosa:** un solo PDF numerado, con índice, firmado, de hasta 25 MB. El preview de Mangrullo imprime un paquete físico.
 5. **Con lotes, la oferta es una tabla de precios.** Esa planilla que había en la primera versión del preview vuelve a hacer falta, ahora como una pieza más del tipo de licitación y no como la oferta única.
 6. **Las reglas de "te descartan si…" cambian por tipo** y son el mejor candidato para los controles de la Revisión: lote incompleto, canon bajo el piso, pliego sin firmar, falta de declaración de mantenimiento, validez menor a la exigida.
 
@@ -99,7 +99,7 @@ Hecho: el preview tiene `tipo`, y cargados VUCE-564, VUCE-643 y VUCE-642 como ej
 1. Agregar `tipo` a la licitación y que el checklist, la oferta y la revisión salgan de una definición por tipo.
 2. Cargar **VUCE-564** (LPI de bienes, con lotes y calificación posterior) y **VUCE-643** (CP, presentación electrónica) como segundo y tercer ejemplo.
 3. Pestaña Oferta por tipo: canon e inversión (concesión), planilla por lote con impuestos y moneda (bienes y servicios).
-4. Revisión con los controles propios de cada tipo, y paquete final como PDF único con índice para CP.
+4. Revisión con los controles propios de cada tipo, y pliego final como PDF único con índice para CP.
 
 ## 6. Lo que no se pudo confirmar
 

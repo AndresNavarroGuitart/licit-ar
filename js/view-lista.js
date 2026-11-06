@@ -59,7 +59,7 @@
 
   V.nueva = function (st) {
     st = st || { files: [], busy: false, step: 0 };
-    var steps = ['Leyendo los archivos', 'Identificando requisitos y sobres', 'Extrayendo fechas y garantías', 'Armando el checklist y el índice del paquete'];
+    var steps = ['Leyendo los archivos', 'Identificando requisitos y sobres', 'Extrayendo fechas y garantías', 'Armando el checklist y el índice del pliego'];
     var body;
     if (st.busy) {
       body = '<div class="card pad"><h3>Analizando el expediente…</h3><ul class="steps-an">' + steps.map(function (s, i) {

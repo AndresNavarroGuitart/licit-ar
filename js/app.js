@@ -62,15 +62,15 @@
   /* simulacion del armado: cada paso deja un requisito listo, en el orden del pliego */
   function simular(l) {
     corrida(l, Demo.pasos(l), 'Simulando el armado de la oferta', 'El sistema arma cada requisito en el orden del pliego.', function (bad, warn) {
-      return '<p style="width:100%"><b>' + (bad ? bad + ' punto(s) a resolver.' : 'Oferta armada: ' + S.progress(l).total + ' requisitos listos y ' + S.folios(l).total + ' folios.') + '</b> ' + (warn ? warn + ' aviso(s).' : 'Sin avisos.') + '</p>' +
-        '<a class="btn primary" href="#/l/' + l.id + '/paquete">Ver paquete completo</a><a class="btn" href="#/l/' + l.id + '/revision">Ver revisión</a><a class="btn" href="#/l/' + l.id + '/oferta">Ver oferta económica</a>';
+      return '<p style="width:100%"><b>' + (bad ? bad + ' punto(s) a resolver.' : 'Oferta armada: ' + S.progress(l).total + ' requisitos listos y ' + S.folios(l).total + ' páginas.') + '</b> ' + (warn ? warn + ' aviso(s).' : 'Sin avisos.') + '</p>' +
+        '<a class="btn primary" href="#/l/' + l.id + '/paquete">Ver pliego completo</a><a class="btn" href="#/l/' + l.id + '/revision">Ver revisión</a><a class="btn" href="#/l/' + l.id + '/oferta">Ver oferta económica</a>';
     });
   }
   /* de la oferta armada hasta la ejecucion del contrato */
   function recorrido(l) {
     Demo.pasos(l).forEach(function (p) { p.run(); });
     corrida(l, Demo.pasosRecorrido(l), 'Simulando el recorrido completo', 'La oferta ya está armada. Ahora se simulan la apertura, la adjudicación y el arranque de la concesión.', function () {
-      return '<p style="width:100%"><b>Concesión en ejecución.</b> Etapa 6 de 6, con las fechas posteriores a hoy simuladas.</p><a class="btn primary" href="#/l/' + l.id + '/seguimiento">Ver el seguimiento</a><a class="btn" href="#/l/' + l.id + '/paquete">Ver paquete completo</a>';
+      return '<p style="width:100%"><b>Concesión en ejecución.</b> Etapa 6 de 6, con las fechas posteriores a hoy simuladas.</p><a class="btn primary" href="#/l/' + l.id + '/seguimiento">Ver el seguimiento</a><a class="btn" href="#/l/' + l.id + '/paquete">Ver pliego completo</a>';
     });
   }
   function corrida(l, pasos, titulo, desc, fin) {
@@ -93,6 +93,20 @@
     }, 110);
   }
 
+  /* borrador de una declaración o nota: datos de la empresa y texto, los dos editables en el mismo lugar */
+  function borradorModal(l, req) {
+    var emb = S.empresaDe(l), ro = S.bloqueada(l), usados = ro ? [] : S.camposUsados(l, [req.tpl]), vacios = usados.filter(function (c) { return S.vacio(emb, c); }), editado = !!req.textoHtml;
+    var datos = usados.length ? '<details class="card pad no-print" style="margin:12px 0"' + (vacios.length ? ' open' : '') + '><summary style="cursor:pointer;font-weight:600;color:var(--ink)">Datos de ' + UI.esc(emb.razon.replace(/s*(ficticia)s*/i, '')) + ' que usa este documento' + (vacios.length ? ' · <span style="color:var(--bad)">faltan ' + vacios.length + '</span>' : '') + '</summary>' +
+      '<p class="muted" style="margin:8px 0 12px;font-size:13px">Se guardan en <a href="#/empresa/' + emb.id + '" data-act="close">Mi empresa</a> y el borrador se actualiza al salir del campo.</p><div class="grid cols-eq" style="gap:14px">' +
+      usados.map(function (c) { return V.campoEmp(emb, c, 'data-tpl="' + req.id + '"'); }).join('') + '</div></details>' : '';
+    var aviso = editado ? '<div class="banner no-print" style="margin:10px 0"><span>✎</span><span>El texto fue editado a mano: los datos de la empresa ya no lo actualizan. Con "Volver al original" se recalcula.</span></div>' : '';
+    var botones = ro ? '' : '<button class="btn" data-act="borrador-editar">Editar texto</button><button class="btn primary hide" data-act="borrador-guardar" data-id="' + req.id + '">Guardar texto</button>' + (editado ? '<button class="btn" data-act="borrador-restaurar" data-id="' + req.id + '">Volver al original</button>' : '');
+    return UI.modal('<h2>' + Plantillas.titulo[req.tpl] + '</h2><p class="muted">Redactado con los datos de <a href="#/empresa/' + emb.id + '" data-act="close">Mi empresa</a> y de esta licitación. Lo resaltado se completó solo.</p>' + aviso + datos +
+      (req.textoHtml || Plantillas.render(req.tpl, emb, l)) +
+      '<div class="row wrap no-print" style="margin:12px 0">' + botones + '</div>' +
+      '<div class="row"><button class="btn primary" data-act="tpl-listo" data-id="' + req.id + '">Marcar como firmado y listo</button><button class="btn" data-act="close">Cerrar</button></div>', true);
+  }
+
   /* ---------- clicks ---------- */
   document.addEventListener('click', function (ev) {
     var o = document.getElementById('overlay');
@@ -106,7 +120,7 @@
     if (act === 'filtro-estado') { V.licEstado = el.dataset.e; return render(); }
     /* lo presentado se ve completo pero no se edita, salvo que se habilite la edición */
     if (act === 'desbloquear' || act === 'bloquear') { l.editable = act === 'desbloquear'; S.save(); return render(); }
-    var MUT = { ciclo: 1, adjuntar: 1, 'elegir-doc': 1, simular: 1, 'tpl-listo': 1, modalidad: 1, presentada: 1, 'completar-empresa': 1, 'registrar-entrega': 1 };
+    var MUT = { ciclo: 1, adjuntar: 1, 'elegir-doc': 1, simular: 1, 'tpl-listo': 1, modalidad: 1, presentada: 1, 'completar-empresa': 1, 'registrar-entrega': 1, 'borrador-guardar': 1, 'borrador-restaurar': 1, 'quitar-doc': 1, 'req-estado': 1 };
     if (act === 'add-empresa') {
       var ne = { id: 'e' + Date.now(), razon: '', cuit: '', nif: '', anio: '', objeto: '', domicilio: '', email: '', telefono: '', representante: '', cargo: '', dni: '', poder: '', directores: '', visitaNro: '', benef: '', origen: '', fin: { ac: '', pc: '', pt: '', pn: '', mb: '', io: '' }, ventas: '', expEsp: '', expSim: '' };
       S.get().empresas.push(ne); S.save(); UI.toast('Empresa agregada: completá sus datos.'); location.hash = '#/empresa/' + ne.id; return;
@@ -121,7 +135,7 @@
     if (act === 'del-doc') {
       var dd = S.doc(el.dataset.id), usado = S.get().licitaciones.some(function (x) { return x.requisitos.some(function (q) { return q.docId === dd.id; }); });
       if (usado) return UI.toast('Está en uso en una licitación: reemplazalo desde el armado antes de quitarlo.');
-      var s1 = S.get(); s1.biblioteca = s1.biblioteca.filter(function (d) { return d.id !== dd.id; }); S.save(); UI.toast('Documento quitado.'); return render();
+      var s1 = S.get(); s1.biblioteca = s1.biblioteca.filter(function (d) { return d.id !== dd.id; }); S.archivos.borrar(dd.fileId); S.save(); UI.toast('Documento quitado.'); return render();
     }
     if (act === 'onb-hecho') { var oh = S.get().onb.hechos, ok = el.dataset.lid + ':' + el.dataset.k; oh[ok] = !oh[ok]; S.save(); return render(); }
     if (act === 'completar-empresa' || act === 'onb-completar') {
@@ -145,19 +159,32 @@
       if (!en.fecha) en.fecha = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
       S.setEtapa(l, 4); S.save(); UI.toast('Entrega registrada: la licitación quedó presentada.'); return render();
     }
-    if (act === 'exportar') return UI.toast('Preview: en la versión real acá se descarga el PDF foliado con índice, en original y copia.');
+    if (act === 'exportar') return UI.toast('Preview: en la versión real acá se descarga el PDF paginado con índice, en original y copia.');
     if (act === 'presentada') { S.setEtapa(l, 4); S.save(); UI.toast('Marcada como presentada.'); return render(); }
     if (act === 'reset-demo') { S.reset(); nueva = { files: [], busy: false, step: 0 }; location.hash = '#/'; UI.toast('Datos de ejemplo restablecidos.'); return render(); }
 
-    if (act === 'borrador') {
-      /* los datos de la empresa que usa este borrador se editan en el mismo lugar; lo que falta va primero */
-      var emb = S.empresaDe(l), usados = S.bloqueada(l) ? [] : S.camposUsados(l, [req.tpl]), vacios = usados.filter(function (c) { return S.vacio(emb, c); });
-      var datos = usados.length ? '<details class="card pad no-print" style="margin:12px 0"' + (vacios.length ? ' open' : '') + '><summary style="cursor:pointer;font-weight:600;color:var(--ink)">Datos de ' + UI.esc(emb.razon.replace(/\s*\(ficticia\)\s*/i, '')) + ' que usa este documento' + (vacios.length ? ' · <span style="color:var(--bad)">faltan ' + vacios.length + '</span>' : '') + '</summary>' +
-        '<p class="muted" style="margin:8px 0 12px;font-size:13px">Se guardan en <a href="#/empresa/' + emb.id + '" data-act="close">Mi empresa</a> y el borrador se actualiza al salir del campo.</p><div class="grid cols-eq" style="gap:14px">' +
-        usados.map(function (c) { return V.campoEmp(emb, c, 'data-tpl="' + req.id + '"'); }).join('') + '</div></details>' : '';
-      return UI.modal('<h2>' + Plantillas.titulo[req.tpl] + '</h2><p class="muted">Redactado con los datos de <a href="#/empresa/' + emb.id + '" data-act="close">Mi empresa</a> y de esta licitación. Lo resaltado se completó solo.</p>' + datos +
-        Plantillas.render(req.tpl, emb, l) +
-        '<div class="row"><button class="btn primary" data-act="tpl-listo" data-id="' + req.id + '">Marcar como firmado y listo</button><button class="btn" data-act="close">Cerrar</button></div>', true);
+    if (act === 'borrador') return borradorModal(l, req);
+    if (act === 'borrador-editar') {
+      var pp = document.querySelector('#overlay .paper'); pp.contentEditable = 'true'; pp.style.outline = '2px solid var(--primary)'; pp.focus();
+      el.classList.add('hide'); document.querySelector('[data-act="borrador-guardar"]').classList.remove('hide');
+      return UI.toast('Editá el texto directamente y tocá "Guardar texto".');
+    }
+    if (act === 'borrador-guardar') {
+      var cl = document.querySelector('#overlay .paper').cloneNode(true); cl.removeAttribute('contenteditable'); cl.removeAttribute('style');
+      req.textoHtml = cl.outerHTML; S.save(); UI.toast('Texto guardado.'); render(); return borradorModal(l, req);
+    }
+    if (act === 'borrador-restaurar') { delete req.textoHtml; S.save(); UI.toast('Volvió el texto original.'); render(); return borradorModal(l, req); }
+    if (act === 'cargar-req') return UI.modal(V.cargaReq(l, req));
+    if (act === 'cargar-tarea') return UI.modal(V.cargaTarea(l, el.dataset.id));
+    if (act === 'ver-archivo') return S.archivos.abrir(el.dataset.fid, el.dataset.nombre);
+    if (act === 'quitar-doc') { req.docId = null; req.estado = 'pendiente'; S.save(); render(); return UI.modal(V.cargaReq(l, req)); }
+    if (act === 'req-estado') { req.estado = el.dataset.e; S.save(); render(); return UI.modal(V.cargaReq(l, req)); }
+    if (act === 'quitar-archivo') {
+      var kq = el.dataset.k;
+      if (kq === 'r' && S.bloqueada(l)) return UI.toast('La licitación está presentada: solo lectura. Habilitá la edición para cambiarla.');
+      var cq = V.cargaDe(l, kq, el.dataset.id); cq.archivos = cq.archivos.filter(function (a) { return a.id !== el.dataset.fid; }); S.archivos.borrar(el.dataset.fid);
+      if (kq === 'r') { cq.archivo = cq.archivos.length ? cq.archivos[0].nombre : ''; if (cq.origen === 'externo' && !cq.archivos.length) cq.estado = 'pendiente'; }
+      S.save(); render(); return UI.modal(kq === 'r' ? V.cargaReq(l, cq) : V.cargaTarea(l, el.dataset.id));
     }
     if (act === 'tpl-listo') { req.estado = 'listo'; S.save(); UI.close(); UI.toast('Documento marcado como listo.'); return render(); }
 
@@ -198,7 +225,7 @@
     if (act === 'imprimir') return window.print();
     if (act === 'ver-doc') {
       var fo = S.folios(l).byReq[req.id];
-      return UI.modal('<h2>' + UI.esc(req.titulo) + '</h2><p class="muted">Folios ' + fo.from + '–' + fo.to + ' · ' + UI.esc(UI.carpeta[req.carpeta]) + ' · documento de ejemplo con datos ficticios</p>' + Demo.doc(l, req) +
+      return UI.modal('<h2>' + UI.esc(req.titulo) + '</h2><p class="muted">Páginas ' + fo.from + '–' + fo.to + ' · ' + UI.esc(UI.carpeta[req.carpeta]) + ' · documento de ejemplo con datos ficticios</p>' + Demo.doc(l, req) +
         '<div class="row"><button class="btn" data-act="close">Cerrar</button></div>', true);
     }
     if (act === 'modalidad') { l.modalidad = el.dataset.m; S.save(); return render(); }
@@ -242,25 +269,45 @@
     if (t.dataset.bibemp) { V.bibEmp = t.value; return render(); }
     if (t.dataset.onbemp !== undefined) { var o1 = S.get().onb = S.get().onb || { hechos: {} }; o1.empId = t.value; return render(); }
     if (t.dataset.bibfiltro) { location.hash = '#/biblioteca' + (t.value ? '/' + t.value : ''); return; }
+    if (t.dataset.cfile && t.files.length) {
+      var pk = t.dataset.cfile.split(':'), kk = pk[0], idd = pk.slice(1).join(':');
+      if (kk === 'r' && S.bloqueada(l)) return UI.toast('La licitación está presentada: solo lectura. Habilitá la edición para cambiarla.');
+      var cc = V.cargaDe(l, kk, idd);
+      return Promise.all(Array.prototype.map.call(t.files, function (f) { return S.archivos.guardar(f); })).then(function (metas) {
+        metas.forEach(function (m) { cc.archivos.push(m); if (m.sinContenido) UI.toast('No se pudo guardar el contenido de ' + m.nombre + ' (muy grande o sin permiso del navegador): queda solo el nombre.'); });
+        if (kk === 'r') { cc.archivo = cc.archivos[0].nombre; if (cc.origen === 'externo') cc.estado = 'listo'; }
+        S.save(); render(); UI.modal(kk === 'r' ? V.cargaReq(l, cc) : V.cargaTarea(l, idd));
+      });
+    }
+    if (t.dataset.cnota !== undefined) { var pn = t.dataset.cnota.split(':'); if (pn[0] === 'r' && S.bloqueada(l)) return; V.cargaDe(l, pn[0], pn.slice(1).join(':')).nota = t.value; S.save(); return render(); }
+    if (t.dataset.cfecha !== undefined) { V.cargaDe(l, 't', t.dataset.cfecha).fecha = t.value; S.save(); return render(); }
+    if (t.dataset.ctarea) { S.seg(l).tareas[t.dataset.ctarea] = t.checked; S.save(); render(); return UI.modal(V.cargaTarea(l, t.dataset.ctarea)); }
     if (t.id === 'pick-doc' && t.files[0]) {
       var fl = route().filtro, propia = fl && fl !== 'sin' ? fl : null, tipoSel = document.getElementById('tipo-doc'), empSel = document.getElementById('emp-doc');
-      S.get().biblioteca.push({ id: 'd' + Date.now(), empId: propia ? S.empresaDe(S.lic(propia)).id : (empSel ? empSel.value : S.get().empresas[0].id), tipo: tipoSel ? tipoSel.value : 'estatuto', nombre: t.files[0].name.replace(/\.[^.]+$/, ''), vence: null, archivo: t.files[0].name, licId: propia });
-      S.save(); UI.toast(propia ? 'Documento agregado a la licitación.' : 'Documento agregado a la biblioteca.'); return render();
+      return S.archivos.guardar(t.files[0]).then(function (m) {
+        S.get().biblioteca.push({ id: 'd' + Date.now(), empId: propia ? S.empresaDe(S.lic(propia)).id : (empSel ? empSel.value : S.get().empresas[0].id), tipo: tipoSel ? tipoSel.value : 'estatuto', nombre: m.nombre.replace(/\.[^.]+$/, ''), vence: null, archivo: m.nombre, fileId: m.sinContenido ? null : m.id, licId: propia });
+        S.save(); UI.toast(propia ? 'Documento agregado a la licitación.' : 'Documento agregado a la biblioteca.'); render();
+      });
     }
-    if (t.dataset.up && t.files[0]) { var rq = l.requisitos.filter(function (x) { return x.id === t.dataset.up; })[0]; rq.archivo = t.files[0].name; rq.estado = 'listo'; S.save(); return render(); }
+    if (t.dataset.up && t.files[0]) {
+      var rq = l.requisitos.filter(function (x) { return x.id === t.dataset.up; })[0];
+      return S.archivos.guardar(t.files[0]).then(function (m) { rq.archivos = (rq.archivos || []).concat([m]); rq.archivo = rq.archivos[0].nombre; rq.estado = 'listo'; S.save(); render(); });
+    }
     if (t.dataset.newdoc && t.files[0]) {
       var rq2 = l.requisitos.filter(function (x) { return x.id === t.dataset.newdoc; })[0], id = 'd' + Date.now();
-      S.get().biblioteca.push({ id: id, tipo: rq2.docTipo, nombre: t.files[0].name.replace(/\.[^.]+$/, ''), vence: null, archivo: t.files[0].name, licId: l.id, empId: l.empresaId });
-      rq2.docId = id; rq2.estado = 'listo'; S.save(); UI.close(); return render();
+      if (S.bloqueada(l)) return UI.toast('La licitación está presentada: solo lectura. Habilitá la edición para cambiarla.');
+      return S.archivos.guardar(t.files[0]).then(function (m) {
+        S.get().biblioteca.push({ id: id, tipo: rq2.docTipo, nombre: m.nombre.replace(/\.[^.]+$/, ''), vence: null, archivo: m.nombre, fileId: m.sinContenido ? null : m.id, licId: l.id, empId: l.empresaId });
+        rq2.docId = id; rq2.estado = 'listo'; S.save(); UI.close(); render(); UI.modal(V.cargaReq(l, rq2));
+      });
     }
     if (t.dataset.eid && (t.dataset.emp || t.dataset.empfin)) {
       var ee = S.empresaById(t.dataset.eid), num = t.type === 'number', val = num ? (t.value === '' ? '' : Number(t.value)) : t.value;
       if (t.dataset.emp) ee[t.dataset.emp] = val; else { ee.fin = ee.fin || {}; ee.fin[t.dataset.empfin] = val; }
       S.save();
       /* con un borrador abierto no se vuelve a armar el modal (se perdería el foco): solo se rehace el texto y se quita la marca de "falta" */
-      var paper = t.dataset.tpl && l && document.querySelector('#overlay .paper');
-      if (paper) {
-        var rt = l.requisitos.filter(function (x) { return x.id === t.dataset.tpl; })[0];
+      var paper = t.dataset.tpl && l && document.querySelector('#overlay .paper'), rt = paper && l.requisitos.filter(function (x) { return x.id === t.dataset.tpl; })[0];
+      if (paper && !rt.textoHtml) {
         paper.outerHTML = Plantillas.render(rt.tpl, S.empresaDe(l), l);
         var sm = document.querySelector('#overlay details > summary'), faltan = S.camposUsados(l, [rt.tpl]).filter(function (c) { return S.vacio(S.empresaDe(l), c); }).length;
         if (sm) sm.innerHTML = sm.innerHTML.replace(/\s*·\s*<span[^>]*>faltan \d+<\/span>/, '') + (faltan ? ' · <span style="color:var(--bad)">faltan ' + faltan + '</span>' : '');
@@ -270,8 +317,11 @@
     /* documentos de la empresa: uno pedido por un pliego, o uno cualquiera con vencimiento */
     if (t.dataset.eid && (t.dataset.newtipo || t.id === 'pick-emp-doc') && t.files[0]) {
       var tipoE = t.dataset.newtipo || document.getElementById('tipo-emp-doc').value, vEl = document.getElementById('vence-emp-doc'), nm = t.files[0].name;
-      S.get().biblioteca.push({ id: 'd' + Date.now(), empId: t.dataset.eid, tipo: tipoE, nombre: (S.NOMBRE_DOC[tipoE] || tipoE) + ' — ' + nm.replace(/\.[^.]+$/, ''), vence: !t.dataset.newtipo && vEl && vEl.value ? vEl.value : null, archivo: nm });
-      S.save(); UI.toast('Documento guardado en la empresa.'); return render();
+      var venceE = !t.dataset.newtipo && vEl && vEl.value ? vEl.value : null;
+      return S.archivos.guardar(t.files[0]).then(function (m) {
+        S.get().biblioteca.push({ id: 'd' + Date.now(), empId: t.dataset.eid, tipo: tipoE, nombre: (S.NOMBRE_DOC[tipoE] || tipoE) + ' — ' + nm.replace(/\.[^.]+$/, ''), vence: venceE, archivo: nm, fileId: m.sinContenido ? null : m.id });
+        S.save(); UI.toast('Documento guardado en la empresa.'); render();
+      });
     }
     if (t.dataset.licemp) { S.cambiarEmpresa(l, t.value); S.save(); UI.toast('Empresa cambiada: los documentos se reasignaron a ' + S.empresaDe(l).razon.replace(/\s*\(ficticia\)/, '') + '.'); return render(); }
     if (t.dataset.of) {

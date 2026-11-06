@@ -66,10 +66,11 @@
     var chk = t.auto !== undefined
       ? '<span class="stbtn ' + (done ? 'listo' : '') + '" title="Se marca solo según lo cargado" style="cursor:default">✓</span>'
       : '<button class="stbtn ' + (done ? 'listo' : '') + '" data-act="tarea" data-id="' + t.id + '" aria-label="' + (done ? 'Hecha' : 'Pendiente') + '">✓</button>';
-    return '<div class="req" style="grid-template-columns:34px 1fr auto auto">' + chk +
-      '<div><div class="t">' + esc(t.t) + '</div><div class="d">' + esc(t.plazo || '') + '</div></div>' +
+    var cg = Store.seg(l).cargas && Store.seg(l).cargas[t.id];
+    return '<div class="req" style="grid-template-columns:34px 1fr auto auto auto">' + chk +
+      '<div><div class="t">' + esc(t.t) + '</div><div class="d">' + esc(t.plazo || '') + '</div>' + (cg && (cg.archivos.length || cg.nota) ? '<div style="margin-top:4px">' + V.cargaMarcas(cg) + '</div>' : '') + '</div>' +
       '<div class="right">' + (t.fecha ? '<div class="ink num" style="font-weight:600">' + dmy(t.fecha) + '</div>' + (done ? '' : '<div style="font-size:12.5px" class="' + (tone === 'bad' ? '' : 'muted') + '">' + (tone === 'bad' ? UI.pill(UI.countdown(t.fecha), 'bad') : UI.countdown(t.fecha)) + '</div>') : '') + '</div>' +
-      '<div>' + (t.src || '') + '</div></div>';
+      '<div>' + (t.src || '') + '</div><div><button class="btn sm" data-act="cargar-tarea" data-id="' + esc(t.id) + '">Cargar / editar</button></div></div>';
   }
 
   function consultas(l) {
@@ -120,12 +121,17 @@
   var EXTRA = { 2: consultas, 4: aperturaYMejora, 5: adjudicacion, 6: ejecucion };
   V.extraConsultas = consultas;
 
+  /* qué etapas dejó abiertas la persona: se conserva al volver a dibujar la pantalla tras cargar algo */
+  V.etapasAbiertas = {};
+  document.addEventListener('toggle', function (ev) { var d = ev.target; if (d && d.dataset && d.dataset.etapa) V.etapasAbiertas[d.dataset.etapa] = d.open; }, true);
+
   V.seguimiento = function (l) {
     var cur = Store.etapa(l), T = V.tareas(l), sec = '', EX = V.TV[Store.T(l).oferta] ? V.TV[Store.T(l).oferta].extras : EXTRA;
     Store.ETAPAS.slice(1).forEach(function (e) {
       var ts = T[e.n], hechas = ts.filter(function (t) { return V.tareaHecha(l, t); }).length;
       var pill = e.n < cur ? (hechas === ts.length ? UI.pill('Hecha', 'ok') : UI.pill('Quedan pendientes', 'warn')) : e.n === cur ? UI.pill('Etapa actual', 'info') : UI.pill('Próxima', 'muted');
-      sec += '<details class="card etapa"' + (e.n === cur ? ' open' : '') + '><summary><span class="n">' + e.n + '</span><span style="flex:1"><b class="ink">' + esc(e.t) + '</b><span class="muted" style="display:block;font-size:13px">' + esc(e.d) + '</span></span><span class="muted" style="font-size:13px">' + hechas + ' de ' + ts.length + '</span>' + pill + '</summary><div class="etapa-b">' +
+      var clave = l.id + ':' + e.n, abierta = clave in V.etapasAbiertas ? V.etapasAbiertas[clave] : e.n === cur;
+      sec += '<details class="card etapa" data-etapa="' + clave + '"' + (abierta ? ' open' : '') + '><summary><span class="n">' + e.n + '</span><span style="flex:1"><b class="ink">' + esc(e.t) + '</b><span class="muted" style="display:block;font-size:13px">' + esc(e.d) + '</span></span><span class="muted" style="font-size:13px">' + hechas + ' de ' + ts.length + '</span>' + pill + '</summary><div class="etapa-b">' +
         ts.map(function (t) { return filaTarea(l, t); }).join('') + (EX[e.n] ? '<div style="padding:0 16px 16px">' + EX[e.n](l) + '</div>' : '') + '</div></details>';
     });
     var pend = T[cur] ? T[cur].filter(function (t) { return !V.tareaHecha(l, t); }) : [];

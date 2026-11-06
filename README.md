@@ -13,7 +13,7 @@ El preview está armado leyendo un pliego real: **Concesión de uso del predio M
 Qué enseñó este pliego sobre el producto:
 
 - **No todas las licitaciones son "comprar bienes".** Esta es una concesión: la oferta no es una planilla de precios sino *canon mensual + plan de inversiones + proyecciones financieras*. El producto necesita un **tipo de licitación** que decida qué estructura de oferta lleva.
-- **Un sobre único con tres carpetas** (Antecedentes, Oferta técnica, Oferta económica), hojas foliadas en forma correlativa, índice, original y copia, firmado en todas las hojas, y sin identificar al oferente por fuera.
+- **Un sobre único con tres carpetas** (Antecedentes, Oferta técnica, Oferta económica), páginas numeradas en forma correlativa, índice, original y copia, firmado en todas las hojas, y sin identificar al oferente por fuera.
 - **Requisitos eliminatorios con números**: canon mínimo, inversión mínima y plazo máximo, tres indicadores financieros (liquidez > 1, endeudamiento < 1,5, margen > 0), garantía de $ 40 M. Son controles que el sistema puede calcular.
 - **Plazos en días hábiles** y **plazos post-apertura**: el original de la garantía se entrega en 24 h; tras adjudicar hay 5 días hábiles para dos garantías nuevas y 20 para formalizar al concesionario.
 - **La estructura cambia según cómo se presente el oferente**: individual o conjunta (UT / consorcio, hasta 5 integrantes) suma cuatro requisitos.
@@ -50,7 +50,7 @@ Empresas de ejemplo (ficticias): Delta Marina Desarrollos S.A. (concesión de Ma
 
 ## Licitaciones presentadas: solo lectura
 
-Una licitación presentada se puede ver completa (resumen, requisitos, armado con sus documentos, oferta, revisión y paquete) pero la oferta queda **en solo lectura**: los campos aparecen bloqueados y las acciones que modifican (cambiar estados, adjuntar, simular, cambiar la modalidad) avisan que está presentada. Un banner permite **Habilitar edición** y **Volver a solo lectura**. El Seguimiento no se bloquea, porque después de presentar hay que seguir cargando apertura, adjudicación y ejecución. El ejemplo cargado es VUCE-663-CP-S (comparación de precios de servicios), ya presentada.
+Una licitación presentada se puede ver completa (resumen, requisitos, armado con sus documentos, oferta, revisión y pliego) pero la oferta queda **en solo lectura**: los campos aparecen bloqueados y las acciones que modifican (cambiar estados, adjuntar, simular, cambiar la modalidad) avisan que está presentada. Un banner permite **Habilitar edición** y **Volver a solo lectura**. El Seguimiento no se bloquea, porque después de presentar hay que seguir cargando apertura, adjudicación y ejecución. El ejemplo cargado es VUCE-663-CP-S (comparación de precios de servicios), ya presentada.
 
 ## Línea de tiempo
 
@@ -83,9 +83,19 @@ En **Armado → "Simular el armado de la oferta"** el sistema arma, con una empr
    - Planos de conjunto (1:500) y corte, memoria descriptiva, organigrama y adecuación al Anexo III.
    - Proyecciones financieras y flujo de fondos a 20 años con la bonificación del canon; TIR, recupero y VAN.
    - Patrimonio, fuentes de financiación, indicadores certificados, antecedentes y seguros.
-4. Constituye la garantía de oferta, folia el sobre (246 folios) y corre los controles.
+4. Constituye la garantía de oferta, numera el sobre (246 páginas) y corre los controles.
 
-Cada requisito listo tiene **Ver documento**. **Ver paquete completo** (`#/l/:id/paquete`) junta rótulo del sobre, índice y todos los documentos en orden con sus folios, y se puede imprimir o guardar como PDF desde el navegador. Todo es ficticio y está marcado así.
+Cada requisito listo tiene **Ver documento**. **Ver pliego completo** (`#/l/:id/paquete`) junta rótulo del sobre, índice y todos los documentos en orden con sus páginas, y se puede imprimir o guardar como PDF desde el navegador. Todo es ficticio y está marcado así.
+
+## Cargar y editar en cada punto
+
+Cada requisito (pestañas Requisitos y Armado) y cada paso de las etapas (pestaña Seguimiento) tiene un botón **Cargar / editar** que abre un panel con todo en el mismo lugar:
+
+- **Archivos:** se agregan, se abren y se quitan. Se guardan de verdad en el navegador (IndexedDB), así que se pueden volver a abrir; no se suben a ningún servidor. Se aceptan hasta 50 MB por archivo.
+- **Estado, notas y fecha** del paso. En los requisitos, el estado se cambia a mano; en los pasos que se marcan solos según lo cargado, solo se agregan archivos y notas.
+- **Según el origen del requisito:** documento de la biblioteca (cambiar, quitar o subir uno nuevo, que queda en Mi empresa), borrador (completar los datos y **editar el texto a mano**, con "Volver al original"), archivo a subir, o link a la pestaña Oferta.
+- Las licitaciones presentadas muestran los requisitos en solo lectura; el seguimiento sigue editable.
+- El pliego final nombra los archivos adjuntos; el contenido de esos archivos no se mezcla con los documentos de ejemplo.
 
 ## Pantallas
 
@@ -97,12 +107,12 @@ Cada requisito listo tiene **Ver documento**. **Ver paquete completo** (`#/l/:id
 | `#/l/:id/resumen` | Qué armar, modalidad (individual o UT), faltantes, cronograma, datos clave, si resultás adjudicatario |
 | `#/l/:id/archivos` | Archivos del expediente |
 | `#/l/:id/requisitos` | Checklist por carpeta con fuente en el pliego |
-| `#/l/:id/armado` | Resolver cada requisito, folios, reglas de forma, vista previa del paquete |
+| `#/l/:id/armado` | Resolver cada requisito, páginas, reglas de forma, vista previa del pliego |
 | `#/l/:id/oferta` | Canon (bonificación y total), inversión, garantía de oferta, indicadores financieros, Anexo II |
 | `#/l/:id/revision` | Controles bloqueantes y avisos; lleva al armado final |
-| `#/l/:id/entrega` | **Presentación (armado final)**: contenido final con folios, formato y lugar de entrega según el pliego, control final (automático y manual), descarga real del documento (HTML para pasar a PDF, Word `.doc` e índice en CSV), texto del correo para los envíos por mail y registro de la entrega, que marca la licitación como presentada |
+| `#/l/:id/entrega` | **Presentación (armado final)**: contenido final con páginas, formato y lugar de entrega según el pliego, control final (automático y manual), descarga real del documento (HTML para pasar a PDF, Word `.doc` e índice en CSV), texto del correo para los envíos por mail y registro de la entrega, que marca la licitación como presentada |
 | `#/l/:id/seguimiento` | Etapas 2 a 6: tareas con plazos del pliego, consultas, apertura, mejora, adjudicación y ejecución |
-| `#/l/:id/paquete` | Paquete final: rótulo, índice y todos los documentos foliados, imprimible |
+| `#/l/:id/paquete` | Pliego final: rótulo, índice y todos los documentos con sus páginas, imprimible |
 | `#/biblioteca` y `#/biblioteca/:id` | Documentos agrupados por licitación (expediente, biblioteca usada, archivos subidos y propios), con buscador en vivo, filtro por licitación y "sin usar en ninguna"; cada fila indica el requisito que cubre y el vencimiento contra la apertura |
 | `#/empresa` y `#/empresa/:id` | **Mi empresa**: varias empresas o sociedades, con sus datos, sus documentos y lo que piden sus pliegos |
 | `#/onboarding` y `#/onboarding/:paso` | **Onboarding**: es la pantalla de entrada al abrir el link, con los pasos cerrados; guía de 8 pasos (datos de la empresa, documentos, subir el pliego, resumen, requisitos, oferta, revisión, presentar). Cada paso dice qué hacer, qué información y qué documentos hacen falta, y se tilda solo según lo cargado (salvo "revisar el resumen" y "cargar la oferta", que se marcan a mano). Cada paso se despliega justo debajo de su título (uno abierto a la vez). Se elige solo la empresa; los pasos 4 a 8 siguen su primera licitación sin presentar |
@@ -119,7 +129,7 @@ Cada requisito listo tiene **Ver documento**. **Ver paquete completo** (`#/l/:id
 - El checklist del caso de referencia está cargado a mano desde la lectura del pliego; **subir archivos nuevos solo simula** el análisis.
 - Las plantillas son modelos de partida: hay que revisarlas con asesoría legal antes de firmar.
 - Los plazos en días hábiles no descuentan feriados.
-- El paquete se imprime desde el navegador; el PDF foliado con original y copia lo generaría la versión real.
+- El pliego se imprime desde el navegador; el PDF paginado con original y copia lo generaría la versión real.
 - Los documentos técnicos (planos, memoria, organigrama) son esquemas de ejemplo, no proyectos.
 
 ## Versión real (propuesta, no construida)
@@ -127,12 +137,12 @@ Cada requisito listo tiene **Ver documento**. **Ver paquete completo** (`#/l/:id
 - **Stack:** Supabase (Postgres + Auth + Storage) + React/TypeScript + Netlify, como administraNET y el Tablero.
 - **Modelo de datos:** `empresa`, `documento_biblioteca` (con `vence`), `licitacion` (con `tipo` y `parametros`), `archivo`, `requisito` (carpeta, grupo, fuente con artículo, página y texto), `oferta`, `garantia`, `paquete`.
 - **Lectura del pliego:** función en servidor que extrae el texto del PDF y llama a la API de Claude con salida estructurada (requisitos, parámetros, fechas, garantías) y la cita textual de cada uno. Lo que no se puede citar no se muestra como dato. Extracción de texto probada con `pdfjs-dist` sobre los 4 PDF de referencia (93, 14, 3 y 19 páginas, todos con texto; no hizo falta OCR).
-- **Armado:** plantillas en servidor; unión de PDFs con foliado y sellado; descarga por URL firmada.
+- **Armado:** plantillas en servidor; unión de PDFs con paginado y sellado; descarga por URL firmada.
 - **Seguridad (ISO 27001):** pliegos, balances y declaraciones son documentos sensibles → bucket privado, RLS por empresa, sin datos reales en el front estático, registro de descargas.
 
 ## Tipos de licitación
 
-Cada licitación tiene un **tipo** (`tid`) que decide su estructura: partes del sobre, controles de la Revisión, cronograma, pestaña Oferta, tareas del Seguimiento, portada del paquete y documentos. Se definen en `js/store.js` (concesión) y `js/tipos.js` (los demás).
+Cada licitación tiene un **tipo** (`tid`) que decide su estructura: partes del sobre, controles de la Revisión, cronograma, pestaña Oferta, tareas del Seguimiento, portada del pliego y documentos. Se definen en `js/store.js` (concesión) y `js/tipos.js` (los demás).
 
 | Tipo | Ejemplo cargado | Parte del sobre | Oferta | Presentación |
 |---|---|---|---|---|
