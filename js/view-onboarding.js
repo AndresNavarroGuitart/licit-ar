@@ -120,14 +120,14 @@
       return bloque('Qué tenés que hacer', lista(['Abrí Revisión: controla requisitos, vencimientos de documentos, garantías y las reglas del pliego.', 'Resolvé los puntos en rojo: son los que pueden dejar la oferta fuera.', 'Mirá los avisos en amarillo y decidí si hace falta corregir algo.'], true)) +
         bloque('Resultado de la revisión', '<div class="row" style="gap:8px;flex-wrap:wrap">' + UI.pill(malos.length + ' a resolver', malos.length ? 'bad' : 'ok') + UI.pill(avisos.length + ' aviso(s)', avisos.length ? 'warn' : 'ok') + '</div>' +
           (malos.concat(avisos).slice(0, 6).map(function (x) { return '<div class="ob-pend"><span style="color:var(--' + (x.ok === 'bad' ? 'bad' : 'warn') + ')">' + (x.ok === 'bad' ? '×' : '!') + '</span> <span>' + esc(x.titulo) + '</span></div>'; }).join(''))) +
-        '<div class="ob-acc">' + btn('Abrir la revisión', base + 'revision', true) + btn('Ver paquete completo', base + 'paquete') + '</div>';
+        '<div class="ob-acc">' + btn('Abrir la revisión', base + 'revision', true) + btn('Ir al armado final', base + 'entrega') + '</div>';
     }
     /* presentar */
     var rest = Store.ETAPAS.filter(function (x) { return x.n >= 4; });
-    return bloque('Qué tenés que hacer', lista(['Armá el paquete foliado y revisá el índice.', 'Presentalo en el portal o en la mesa de entradas, en el plazo del pliego, con la garantía si corresponde.', 'Marcá la licitación como presentada: queda en solo lectura para no tocar nada por error.'], true)) +
+    return bloque('Qué tenés que hacer', lista(['En Presentación revisá el contenido final, con el orden y los folios que define el pliego.', 'Completá el control final y descargá el documento a entregar (HTML para pasar a PDF, Word o el índice en CSV).', 'Entregalo como pide el pliego, en el plazo y con la garantía si corresponde.', 'Registrá la entrega: la licitación queda presentada y en solo lectura para no tocar nada por error.'], true)) +
       bloque('Después de presentar', '<p class="muted" style="margin:0 0 8px;font-size:13px">Seguimiento lleva los plazos del pliego para cada etapa:</p>' + lista(rest.map(function (x) { return '<b>' + esc(x.t) + '.</b> ' + esc(x.d); }))) +
       (l.presentada ? '<div class="ob-aviso ok">Esta licitación ya está presentada.</div>' : '') +
-      '<div class="ob-acc">' + btn('Ver paquete completo', base + 'paquete', !l.presentada) + btn('Abrir el seguimiento', base + 'seguimiento', l.presentada) + '</div>';
+      '<div class="ob-acc">' + btn('Abrir el armado final', base + 'entrega', !l.presentada) + btn('Ver paquete completo', base + 'paquete') + btn('Abrir el seguimiento', base + 'seguimiento', l.presentada) + '</div>';
   }
 
   V.onboarding = function (n) {

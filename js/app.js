@@ -106,7 +106,7 @@
     if (act === 'filtro-estado') { V.licEstado = el.dataset.e; return render(); }
     /* lo presentado se ve completo pero no se edita, salvo que se habilite la edición */
     if (act === 'desbloquear' || act === 'bloquear') { l.editable = act === 'desbloquear'; S.save(); return render(); }
-    var MUT = { ciclo: 1, adjuntar: 1, 'elegir-doc': 1, simular: 1, 'tpl-listo': 1, modalidad: 1, presentada: 1, 'completar-empresa': 1 };
+    var MUT = { ciclo: 1, adjuntar: 1, 'elegir-doc': 1, simular: 1, 'tpl-listo': 1, modalidad: 1, presentada: 1, 'completar-empresa': 1, 'registrar-entrega': 1 };
     if (act === 'add-empresa') {
       var ne = { id: 'e' + Date.now(), razon: '', cuit: '', nif: '', anio: '', objeto: '', domicilio: '', email: '', telefono: '', representante: '', cargo: '', dni: '', poder: '', directores: '', visitaNro: '', benef: '', origen: '', fin: { ac: '', pc: '', pt: '', pn: '', mb: '', io: '' }, ventas: '', expEsp: '', expSim: '' };
       S.get().empresas.push(ne); S.save(); UI.toast('Empresa agregada: completá sus datos.'); location.hash = '#/empresa/' + ne.id; return;
@@ -135,6 +135,16 @@
     if (act === 'filtro') { V.reqFilter = el.dataset.f; return render(); }
     if (act === 'ciclo') { req.estado = { pendiente: 'en-curso', 'en-curso': 'listo', listo: 'pendiente' }[req.estado]; S.save(); return render(); }
     if (act === 'paquete') return UI.modal(V.paquete(l), true);
+    if (act === 'descargar') return V.descargar(l, el.dataset.fmt);
+    if (act === 'copiar') {
+      var txt = document.getElementById(el.dataset.target).innerText;
+      return (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(function () { UI.toast('Texto copiado.'); }, function () { UI.toast('No se pudo copiar: seleccioná el texto y copialo a mano.'); });
+    }
+    if (act === 'registrar-entrega') {
+      var en = S.entrega(l);
+      if (!en.fecha) en.fecha = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+      S.setEtapa(l, 4); S.save(); UI.toast('Entrega registrada: la licitación quedó presentada.'); return render();
+    }
     if (act === 'exportar') return UI.toast('Preview: en la versión real acá se descarga el PDF foliado con índice, en original y copia.');
     if (act === 'presentada') { S.setEtapa(l, 4); S.save(); UI.toast('Marcada como presentada.'); return render(); }
     if (act === 'reset-demo') { S.reset(); nueva = { files: [], busy: false, step: 0 }; location.hash = '#/'; UI.toast('Datos de ejemplo restablecidos.'); return render(); }
@@ -275,6 +285,8 @@
       var ids = t.dataset.item.split(':'), L2 = l.oferta.lotes.filter(function (x) { return x.id === ids[0]; })[0], it = L2.items.filter(function (x) { return x.id === ids[1]; })[0];
       it[t.dataset.k] = t.value === '' ? '' : Number(t.value); S.save(); return render();
     }
+    if (t.dataset.ent) { S.entrega(l)[t.dataset.ent] = t.value; S.save(); return render(); }
+    if (t.dataset.entctl) { S.entrega(l).ctl[t.dataset.entctl] = t.checked; S.save(); return render(); }
     if (t.dataset.ofb) { l.oferta[t.dataset.ofb] = t.type === 'number' ? (t.value === '' ? '' : Number(t.value)) : t.value; S.save(); return render(); }
     if (t.dataset.cal) { l.calif[t.dataset.cal] = t.value === '' ? '' : Number(t.value); S.save(); return render(); }
     if (t.dataset.calu) { l.calif.unidades[t.dataset.calu] = t.value === '' ? '' : Number(t.value); S.save(); return render(); }

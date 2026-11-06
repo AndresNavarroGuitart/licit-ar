@@ -64,7 +64,7 @@ El producto sigue el proceso general desde el lado del **oferente**. Arriba de c
 |---|---|---|
 | 1. Planificación y preparación | Nada: lo hace la entidad (necesidad, presupuesto, pliegos) | Se muestra en el tablero, atenuada |
 | 2. Convocatoria y consultas | Descargar el pliego, consultar, seguir circulares, hacer la visita técnica | Seguimiento: registro de consultas y circulares, plazos en días hábiles |
-| 3. Presentación de ofertas | Armar propuesta técnica, económica y legal; constituir garantía; entregar el sobre | Requisitos, Armado, Oferta y Revisión |
+| 3. Presentación de ofertas | Armar propuesta técnica, económica y legal; constituir garantía; entregar el sobre | Requisitos, Armado, Oferta, Revisión y Presentación |
 | 4. Apertura y evaluación | Acto de apertura, garantía original en 24 h, aclaraciones en 48 h, mejora de oferta, dictamen | Seguimiento: resultado de la apertura, mejora de canon con su validación |
 | 5. Adjudicación y contratación | Notificación, garantías de cumplimiento y de ejecución (5 días hábiles), constitución del concesionario (20), firma (30) | Seguimiento: cargás la fecha de notificación y los plazos se calculan |
 | 6. Ejecución y cierre | Entrega de tenencia, canon bonificado, inversión mínima en 30 meses, informes, prórroga, devolución del predio | Seguimiento: fecha de tenencia, avance de la inversión y canon por período |
@@ -99,7 +99,8 @@ Cada requisito listo tiene **Ver documento**. **Ver paquete completo** (`#/l/:id
 | `#/l/:id/requisitos` | Checklist por carpeta con fuente en el pliego |
 | `#/l/:id/armado` | Resolver cada requisito, folios, reglas de forma, vista previa del paquete |
 | `#/l/:id/oferta` | Canon (bonificación y total), inversión, garantía de oferta, indicadores financieros, Anexo II |
-| `#/l/:id/revision` | Controles bloqueantes y avisos, generar paquete, marcar presentada |
+| `#/l/:id/revision` | Controles bloqueantes y avisos; lleva al armado final |
+| `#/l/:id/entrega` | **Presentación (armado final)**: contenido final con folios, formato y lugar de entrega según el pliego, control final (automático y manual), descarga real del documento (HTML para pasar a PDF, Word `.doc` e índice en CSV), texto del correo para los envíos por mail y registro de la entrega, que marca la licitación como presentada |
 | `#/l/:id/seguimiento` | Etapas 2 a 6: tareas con plazos del pliego, consultas, apertura, mejora, adjudicación y ejecución |
 | `#/l/:id/paquete` | Paquete final: rótulo, índice y todos los documentos foliados, imprimible |
 | `#/biblioteca` y `#/biblioteca/:id` | Documentos agrupados por licitación (expediente, biblioteca usada, archivos subidos y propios), con buscador en vivo, filtro por licitación y "sin usar en ninguna"; cada fila indica el requisito que cubre y el vencimiento contra la apertura |

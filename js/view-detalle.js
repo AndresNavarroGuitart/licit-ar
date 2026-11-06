@@ -2,8 +2,8 @@
 (function () {
   var esc = UI.esc, money = UI.money;
   var V = window.Views = window.Views || {};
-  V.RO_TABS = ['resumen', 'archivos', 'requisitos', 'armado', 'oferta', 'revision'];   /* pestañas que se bloquean en una licitación presentada */
-  var TABS = [['pliego', 'Pliego'], ['resumen', 'Resumen'], ['archivos', 'Archivos'], ['requisitos', 'Requisitos'], ['armado', 'Armado'], ['oferta', 'Oferta'], ['revision', 'Revisión'], ['seguimiento', 'Seguimiento']];
+  V.RO_TABS = ['resumen', 'archivos', 'requisitos', 'armado', 'oferta', 'revision', 'entrega'];   /* pestañas que se bloquean en una licitación presentada */
+  var TABS = [['pliego', 'Pliego'], ['resumen', 'Resumen'], ['archivos', 'Archivos'], ['requisitos', 'Requisitos'], ['armado', 'Armado'], ['oferta', 'Oferta'], ['revision', 'Revisión'], ['entrega', 'Presentación'], ['seguimiento', 'Seguimiento']];
 
   /* registro de fuentes: el boton "§" abre el panel con el texto del pliego */
   V.srcs = [];
@@ -74,7 +74,7 @@
 
     var body;
     if (!analizada && tab !== 'archivos') body = sinAnalizar(l);
-    else body = ({ pliego: V.pliego, resumen: resumen, archivos: archivos, requisitos: requisitos, armado: armado, oferta: oferta, revision: revision, seguimiento: V.seguimiento }[tab] || resumen)(l);
+    else body = ({ pliego: V.pliego, resumen: resumen, archivos: archivos, requisitos: requisitos, armado: armado, oferta: oferta, revision: revision, entrega: V.entrega, seguimiento: V.seguimiento }[tab] || resumen)(l);
     var aviso = '';
     if (analizada && l.presentada && V.RO_TABS.indexOf(tab) > -1) {
       aviso = l.editable
@@ -264,10 +264,10 @@
         (c.ok === 'ok' ? '' : '<a class="btn sm" href="#/l/' + l.id + '/' + c.tab + '">Resolver</a>') + '</div>';
     }).join('');
     var lista = !bloq.length;
-    return '<div class="banner ' + (lista ? 'info' : '') + '" style="margin-bottom:16px"><span>' + (lista ? '✓' : '!') + '</span><span>' + (lista ? '<b>Sin bloqueos.</b> ' + (avisos.length ? 'Revisá los ' + avisos.length + ' aviso(s) y generá el paquete.' : 'Podés generar el paquete final.') : '<b>' + bloq.length + ' punto(s) a resolver</b> antes de presentar.') + '</span></div>' +
+    return '<div class="banner ' + (lista ? 'info' : '') + '" style="margin-bottom:16px"><span>' + (lista ? '✓' : '!') + '</span><span>' + (lista ? '<b>Sin bloqueos.</b> ' + (avisos.length ? 'Revisá los ' + avisos.length + ' aviso(s) y pasá al armado final.' : 'Podés pasar al armado final.') : '<b>' + bloq.length + ' punto(s) a resolver</b> antes de presentar.') + '</span></div>' +
       '<div class="card">' + rows + '</div>' +
       '<div class="row wrap" style="margin-top:18px"><button class="btn" data-act="paquete">Índice del paquete</button>' +
-      (lista ? '<a class="btn primary" href="#/l/' + l.id + '/paquete">Generar paquete final</a>' : '<button class="btn primary" disabled>Generar paquete final</button>') +
+      (lista ? '<a class="btn primary" href="#/l/' + l.id + '/entrega">Ir al armado final</a>' : '<button class="btn primary" disabled>Ir al armado final</button>') +
       '<button class="btn" data-act="presentada"' + (lista && !l.presentada ? '' : ' disabled') + '>' + (l.presentada ? 'Ya marcada como presentada' : 'Marcar como presentada') + '</button></div>' +
       '<p class="muted" style="margin-top:10px;font-size:13px">El paquete se arma con datos ficticios y se puede imprimir o guardar como PDF desde el navegador. La versión real lo genera foliado, en original y copia, para firmar y sellar.</p>';
   }
